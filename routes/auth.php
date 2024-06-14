@@ -15,6 +15,9 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
                 ->name('register');
 
+    // afficher la page d'accueil si je ne suis pas connecté et etre redirigé sur /dashboard si je suis connecter
+    Route::get('/', [AuthenticatedSessionController::class, 'HomeNotLogged']);
+
     Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
