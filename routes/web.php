@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/edition-article/{post}', [PostController::class, 'edit'])->name('post.edit');
     Route::post('/update/{post}', [PostController::class, 'update'])->name('post.update');
     Route::get('/detail/{post}', [PostController::class, 'show'])->name('post.show');
-    // Route::get('/mes-articles', [PostController::class, 'postsUser'])->name('post.user');
+    Route::get('/mes-articles', [PostController::class, 'postsUser'])->name('post.user');
     Route::post('/suppression/{post}', [PostController::class, 'destroy'])->name('post.destroy');
     // Route::get('/mes-articles', [PostController::class, 'index'])->name('post.list');
     // Route::get('/mes-avis', [PostController::class, 'index'])->name('post.list');

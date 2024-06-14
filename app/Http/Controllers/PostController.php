@@ -218,5 +218,36 @@ class PostController extends Controller
         ->with('success', 'Article supprimé avec succès!');
     }
 
-    
+     /**
+     * Fonction pour afficher les posts de l'utilisateur connecté
+     */
+     public function postsUser()
+     {
+         // Récupérer l'utilisateur actuellement authentifié
+         $user = auth()->user();
+ 
+         // Vérifier si l'utilisateur est authentifié
+         if (!$user) {
+             return redirect()->route('login')->with('error', 'Veuillez vous connecter pour voir vos articles.');
+         }
+
+        $getPostsUser = Post::latest()->paginate(4)->where('user_id', $user->id);
+         
+        $posts = $getPostsUser->map(function ($post) {
+            return [
+                'post' => $post,
+                'categories'=> $post->categories,
+                'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
+            ];
+        });
+
+        $pagination = Post::latest()->where('user_id', $user->id)->paginate(4);
+
+         // Retourner une vue avec les posts
+         return Inertia::render('Posts/Author/Posts', [
+            'myPosts' => $posts,
+            'pagination_links' => $pagination
+        ]);
+
+     }
 }
