@@ -1,6 +1,16 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
+// Définir une référence réactive pour stocker le nom du heading en fonction de la page courante
+// page d'exemple
+
+// Exécuter la fonction lorsque le composant est monté
+onMounted(() => {
+    // console.log($utils)
+    // headTitle.value = updateMessage(updateTitleHead);
+});
+
 </script>
 
 <template>
@@ -8,7 +18,7 @@ import { Head } from '@inertiajs/vue3';
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
+            <h2 class="font-semibold text-xl "></h2>
         </template>
 
         <div class="py-12">
