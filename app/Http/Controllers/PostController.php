@@ -9,19 +9,24 @@ use Inertia\Response;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\PostStoreRequest;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
 
-    // Déclarez la propriété
-    protected $categories;
+   // Déclarez les propriétés
+   protected $categories;
+   protected $user;
 
-    // Constructeur pour initialiser la propriété
-    public function __construct()
-    {
-        // Initialisez la propriété avec les catégories
-        $this->categories = Category::all();
-    }
+   // Constructeur pour initialiser les propriétés
+   public function __construct()
+   {
+       // Initialisez les catégories avec toutes les catégories disponibles
+       $this->categories = Category::all();
+       
+       // Initialisez l'utilisateur authentifié
+       $this->user = Auth::user();
+   }
 
     /**
      * Display a listing of the resource.
@@ -65,8 +70,6 @@ class PostController extends Controller
      */
     public function store(PostStoreRequest $request)
     {
-        // Récupérer l'utilisateur actuellement authentifié
-        $user = auth()->user();
     
         // Les données validées seront disponibles dans $request->validated()
         $validatedData = $request->validated();
@@ -75,7 +78,7 @@ class PostController extends Controller
         $post = new Post($validatedData);
     
         // Attribuer l'ID de l'utilisateur connecté au champ user_id du post
-        $post->user_id = $user->id;
+        $post->user_id = $this->user->id;
     
         // Enregistrer le post dans la base de données
         $post->save();
@@ -135,9 +138,19 @@ class PostController extends Controller
             'author' => $post->user,
             'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
         ];
+
+       // Récupérer les commentaires les plus récents avec leurs auteurs
+       $comments = $post->comments()->latest()->get()->map(function ($comment) {
+            return [
+                'comment' => $comment,
+                'author' => $comment->user,
+            ];
+        });
     
         return Inertia::render('Posts/Show', [
             'post' => $article,
+            'comments' => $comments,
+            'userID'=> $this->user->id
         ]);
     }
         
@@ -223,15 +236,8 @@ class PostController extends Controller
      */
      public function postsUser()
      {
-         // Récupérer l'utilisateur actuellement authentifié
-         $user = auth()->user();
  
-         // Vérifier si l'utilisateur est authentifié
-         if (!$user) {
-             return redirect()->route('login')->with('error', 'Veuillez vous connecter pour voir vos articles.');
-         }
-
-        $getPostsUser = Post::latest()->paginate(4)->where('user_id', $user->id);
+        $getPostsUser = Post::latest()->paginate(4)->where('user_id', $this->user->id);
          
         $posts = $getPostsUser->map(function ($post) {
             return [
@@ -241,7 +247,7 @@ class PostController extends Controller
             ];
         });
 
-        $pagination = Post::latest()->where('user_id', $user->id)->paginate(4);
+        $pagination = Post::latest()->where('user_id', $this->user->id)->paginate(4);
 
          // Retourner une vue avec les posts
          return Inertia::render('Posts/Author/Posts', [
@@ -250,4 +256,6 @@ class PostController extends Controller
         ]);
 
      }
+
+     
 }
