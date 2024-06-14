@@ -82,22 +82,18 @@ const submit = () => {
                     required
                     autocomplete="new-password"
                 />
-
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Already registered?
-                </Link>
-
+            <div class="flex items-center justify-center my-6">
                 <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Register
                 </PrimaryButton>
             </div>
         </form>
+        <div class="flex flex-inline justify-end my-5">
+            <a class="font-bold hover:underline hover:underline-offset-8  text-gray-600 hover:text-pink-700 rounded active:no-underline focus:ring-1 focus:ring-offset-1 focus:underline-none focus:ring-pink-500" :href="route('login')" >
+                J'ai déjà un compte  ?
+            </a>
+        </div>
     </GuestLayout>
 </template>

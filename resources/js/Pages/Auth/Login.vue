@@ -72,23 +72,37 @@ const submit = () => {
             <div class="block mt-4">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600">Remember me</span>
+                    <span class="ms-2 text-sm text-gray-600">Se souvenir de moi</span>
                 </label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
+            <div class="flex items-center justify-end">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class=" text-sm hover:underline hover:underline-offset-8  text-gray-600 hover:text-pink-700 rounded active:no-underline focus:ring-1 focus:ring-offset-1 focus:underline-none focus:ring-pink-500"
                 >
-                    Forgot your password?
+                    Mot de passe oublié ?
                 </Link>
-
+            </div>
+            <div class="flex items-center justify-center my-6">
                 <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
+                    Se Connecter
                 </PrimaryButton>
             </div>
         </form>
+        <div class="flex flex-inline justify-end my-5">
+            <a class="font-bold hover:underline hover:underline-offset-8  text-gray-600 hover:text-pink-700 rounded active:no-underline focus:ring-1 focus:ring-offset-1 focus:underline-none focus:ring-pink-500" :href="route('register')" >
+                Je n'ai pas encore de compte ?
+            </a>
+        </div>
+        <!-- <div class="group/write my-5 mx-0">
+            <span class="group-hover/write:invisible transition ">
+                Je n'ai pas encore de compte ?
+            </span>
+            <span class="group/link invisible group-hover/write:visible">
+                S'inscrire
+            </span>
+        </div> -->
     </GuestLayout>
 </template>
