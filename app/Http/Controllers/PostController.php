@@ -133,30 +133,44 @@ class PostController extends Controller
      */
 
    
-    public function show(Post $post)
-    {
-        // Accédez directement aux propriétés de l'objet $post
-        $article = [
-            'post' => $post,
-            'categories' => $post->categories,
-            'author' => $post->user,
-            'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
-        ];
-
-       // Récupérer les commentaires les plus récents avec leurs auteurs
-       $comments = $post->comments()->latest()->get()->map(function ($comment) {
-            return [
-                'comment' => $comment,
-                'author' => $comment->user,
-            ];
-        });
-    
-        return Inertia::render('Posts/Show', [
-            'post' => $article,
-            'comments' => $comments,
-            'userID'=> $this->user->id
-        ]);
-    }
+     public function show(Post $post)
+     {
+         // Accédez directement aux propriétés de l'objet $post
+         $article = [
+             'post' => $post,
+             'categories' => $post->categories,
+             'author' => $post->user,
+             'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
+         ];
+     
+         // Récupérer l'utilisateur authentifié
+         $authUserId = auth()->user()->id;
+     
+         // Séparer les commentaires de l'utilisateur authentifié des autres commentaires
+         $authUserComments = $post->comments()->where('user_id', $authUserId)->latest()->get()->map(function ($comment) {
+             return [
+                 'comment' => $comment,
+                 'author' => $comment->user,
+             ];
+         });
+     
+         $otherComments = $post->comments()->where('user_id', '!=', $authUserId)->latest()->get()->map(function ($comment) {
+             return [
+                 'comment' => $comment,
+                 'author' => $comment->user,
+             ];
+         });
+     
+         // Fusionner les deux listes en plaçant les commentaires de l'utilisateur authentifié en premier
+         $comments = $authUserComments->merge($otherComments);
+     
+         return Inertia::render('Posts/Show', [
+             'post' => $article,
+             'comments' => $comments,
+             'userID' => $authUserId,
+         ]);
+     }
+     
         
 
     /**
