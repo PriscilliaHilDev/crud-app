@@ -68,9 +68,9 @@ const deletePost = (post) => {
                             <Link class="-m-1.5 p-1.5" :href="route('post.edit', { post: postItem.post })">
                                 <font-awesome-icon icon="edit" size="2x" color="#B9255F" />
                             </Link>
-                            <Button class="-m-1.5 p-1.5" @click="toggleVisible(postItem.post)" >
+                            <button class="-m-1.5 p-1.5" @click="toggleVisible(postItem.post)" >
                                 <font-awesome-icon icon="close" size="2x" color="#B9255F" />
-                            </Button>
+                            </button>
                         </div>
                         <img class="w-full h-48 object-cover rounded-t-lg" :src="'/storage/' + postItem.image" alt="Post image" />
                         <div class="p-4">
