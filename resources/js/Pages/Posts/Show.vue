@@ -168,7 +168,7 @@ onMounted(() => {
                     <div class="px-6 py-4 bg-gray-100">
                         <h2 class="text-xl font-semibold text-pink-900">Commentaires</h2>
                     </div>
-                    <div class="p-6 overflow-y-auto max-h-[400px]">
+                    <div class="p-6 overflow-y-auto max-h-[500px]">
                         <!-- Vérifier s'il y a des commentaires -->
                         <div v-if="comments.length === 0" class="text-gray-700">
                             Il n'y a pas encore de commentaires pour cet article.
@@ -204,9 +204,9 @@ onMounted(() => {
                         </div>
                     </div>
                     <!-- Formulaire d'ajout de commentaire -->
-                    <div class="px-6 py-4 bg-gray-100">
+                    <div class="px-6 py-4 bg-gray-100  absolute bottom-0 left-0 right-0 ">
                         <h3 class="text-lg font-semibold text-pink-900 mb-2">Ajouter un commentaire</h3>
-                        <form @submit.prevent="toggleEditComment">
+                        <form @submit.prevent="toggleEditComment" >
                             <div class="mb-4">
                                 <textarea id="comment" name="content" v-model="form.content" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-pink-400 focus:ring focus:ring-pink-400 focus:ring-opacity-50"></textarea>
                                 <InputError :message="form.errors.content" />
