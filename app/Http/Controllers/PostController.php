@@ -144,25 +144,39 @@ class PostController extends Controller
          ];
      
          // Récupérer l'utilisateur authentifié
-         $authUserId = auth()->user()->id;
+         $authUserId = $this->user->id;
      
-         // Séparer les commentaires de l'utilisateur authentifié des autres commentaires
-         $authUserComments = $post->comments()->where('user_id', $authUserId)->latest()->get()->map(function ($comment) {
-             return [
-                 'comment' => $comment,
-                 'author' => $comment->user,
-             ];
-         });
-     
-         $otherComments = $post->comments()->where('user_id', '!=', $authUserId)->latest()->get()->map(function ($comment) {
-             return [
-                 'comment' => $comment,
-                 'author' => $comment->user,
-             ];
-         });
-     
-         // Fusionner les deux listes en plaçant les commentaires de l'utilisateur authentifié en premier
-         $comments = $authUserComments->merge($otherComments);
+        
+    // Vérifier s'il y a des commentaires de l'utilisateur authentifié sur ce post
+    $authUserComments = $post->comments()->where('user_id', $authUserId)->exists();
+
+    // Si l'utilisateur a des commentaires sur ce post, les récupérer et les fusionner avec les autres commentaires
+    if ($authUserComments) {
+        $authUserComments = $post->comments()->where('user_id', $authUserId)->latest()->get()->map(function ($comment) {
+            return [
+                'comment' => $comment,
+                'author' => $comment->user,
+            ];
+        });
+        
+        $otherComments = $post->comments()->where('user_id', '!=', $authUserId)->latest()->get()->map(function ($comment) {
+            return [
+                'comment' => $comment,
+                'author' => $comment->user,
+            ];
+        });
+
+        // Fusionner les deux listes en plaçant les commentaires de l'utilisateur authentifié en premier
+        $comments = $authUserComments->merge($otherComments);
+    } else {
+        // Si l'utilisateur n'a pas de commentaires sur ce post, récupérer simplement tous les commentaires
+        $comments = $post->comments()->latest()->get()->map(function ($comment) {
+            return [
+                'comment' => $comment,
+                'author' => $comment->user,
+            ];
+        });
+    }
      
          return Inertia::render('Posts/Show', [
              'post' => $article,
