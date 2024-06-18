@@ -39,11 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/mes-articles', [PostController::class, 'postsUser'])->name('post.user');
     Route::post('/suppression/{post}', [PostController::class, 'destroy'])->name('post.destroy');
     Route::put('/comment/{post}', [CommentController::class, 'store'])->name('comment.store');
+    Route::patch('/edition-commentaire/{comment}', [CommentController::class, 'update'])->name('comment.update');
+    Route::delete('/suppression-commentaire/{comment}', [CommentController::class, 'destroy'])->name('comment.destroy');
 
-    // Route::get('/mes-articles', [PostController::class, 'index'])->name('post.list');
-    // Route::get('/mes-avis', [PostController::class, 'index'])->name('post.list');
-    // Route::get('/recherche', [PostController::class, 'index'])->name('post.list');
-    // Route::get('/messagerie', [PostController::class, 'index'])->name('post.list');
 });
 
 require __DIR__.'/auth.php';

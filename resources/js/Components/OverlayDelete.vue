@@ -4,15 +4,20 @@
   import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
   import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { onMounted } from 'vue';
-import { router } from '@inertiajs/vue3';
   
 
   // Définition des props
 const props = defineProps({
-  post: {
+  currentItem: {
         type: Object,
     },
     toggleVisible: {
+        type: Function,
+    },
+    textDial: {
+        type: String,
+    },
+    funcDelete: {
         type: Function,
     }
 });
@@ -22,10 +27,7 @@ onMounted(() => {
     console.log('props', props.post)
 });
 
-const deletePost = () => {
-  props.toggleVisible()
-  router.post(route('post.destroy', { post:props.post}));
-}
+
   
   
 </script>
@@ -49,14 +51,14 @@ const deletePost = () => {
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">Suppression</DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">Souhaitez-vous vraiment supprimer cette article ?</p>
+                      <p class="text-sm text-gray-500">{{ textDial }}</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 <button type="button" class="inline-flex w-full justify-center rounded-md bg-pink-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-pink-500 sm:ml-3 sm:w-auto" @click="toggleVisible">Annuler</button>
-                <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto" @click="deletePost">Supprimer</button>
+                <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 sm:ml-3 sm:w-auto" @click="funcDelete(currentItem)">Supprimer</button>
               </div>
             </DialogPanel>
           </TransitionChild>

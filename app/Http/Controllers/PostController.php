@@ -6,10 +6,14 @@ use App\Models\Post;
 use Inertia\Inertia;
 use App\Models\Image;
 use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\PostStoreRequest;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
+//  ne pas oublier d'ajouter la librairie image pour zip les image et reduire leur taille
+
 
 class PostController extends Controller
 {
@@ -26,28 +30,28 @@ class PostController extends Controller
        
        // Initialisez l'utilisateur authentifié
        $this->user = Auth::user();
+       
    }
 
     /**
      * Display a listing of the resource.
+     *
      */
     public function index(): Response
     {
-        // recupérer les post dans l'ordre decroissant de 4 en 4 et ajout de l'image via la relation one to one
-    
-        $posts = Post::latest()->paginate(8)->map(function ($post) {
+
+        $intPage = 4;
+        $posts = Post::latest()->paginate($intPage)->map(function ($post) {
             return [
                 'post' => $post,
-                'categories'=> $post->categories,
+                'categories' => $post->categories,
                 'author' => $post->user,
                 'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
             ];
         });
 
-    
-        // récuperer les links de la pagination des articles du plus recent au plus ancien
-        $pagination = Post::latest()->paginate(4);
-       
+        $pagination = Post::latest()->paginate($intPage);
+
         return Inertia::render('Posts/Index', [
             'posts' => $posts,
             'pagination_links' => $pagination

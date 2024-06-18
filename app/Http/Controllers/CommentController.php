@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Http\Requests\CommentStoreRequest;
+use Illuminate\Support\Facades\Gate;
 
 
 
@@ -46,36 +47,40 @@ class CommentController extends Controller
 
     }
     
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CommentStoreRequest $request, Comment $comment)
     {
-        //
+        Gate::authorize('update', $comment);
+
+        // Valider les données de la requête
+        $validatedData = $request->validated();
+
+        // Mettre à jour le commentaire avec les données validées
+        $comment->update($validatedData);
+
+        // Récupérer le post associé au commentaire
+        $post = $comment->post; // Accès direct à la relation "post"
+
+        // Redirection avec un message de succès
+        return redirect()->route('post.show', ['post' => $post])
+                        ->with('success', 'Commentaire mis à jour avec succès!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Comment $comment)
     {
-        //
+        // Vérifier l'autorisation de supprimer le commentaire
+        Gate::authorize('delete', $comment);
+
+        // Supprimer le commentaire
+        $comment->delete();
+
+        // Redirection avec un message de succès
+        return redirect()->route('post.show', ['post' => $comment->post])
+                        ->with('success', 'Commentaire supprimé avec succès!');
     }
 }

@@ -2,21 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\User; 
 use App\Models\Post; 
+use App\Models\User; 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 class Comment extends Model
 {
     use HasFactory;
+    use SoftDeletes; // Activation du soft delete pour ce modèle
+
     
     protected $fillable = [
         'content',
         'user_id',
         'post_id',
     ];
+
 
     /**
      * Get the User that owns the comment. Un utilisateur est l'auteur d'un seul commentaire (relation many to one)

@@ -6,6 +6,8 @@ import { truncateByWords, formatDate } from '@/Common/utils';
 import Paginator from "@/Components/Paginator.vue";
 import OverlayDelete from "@/Components/OverlayDelete.vue";
 import Button from 'primevue/button';
+import { router } from '@inertiajs/vue3';
+
 
 const props = defineProps({
     myPosts: {
@@ -19,6 +21,7 @@ const props = defineProps({
 // onMounted(() => {
 //     console.log('props', props.myPosts)
 // });
+
 
 
 function truncatedCategories(categories) {
@@ -40,6 +43,11 @@ const toggleVisible = (post) => {
     isOverlayVisible.value = !isOverlayVisible.value;
 }
 
+const deletePost = (post) => {
+    isOverlayVisible.value = false;
+    router.post(route('post.destroy', { post:post}));
+}
+
 
 </script>
 
@@ -52,7 +60,7 @@ const toggleVisible = (post) => {
         </template>
 
         <div v-if="myPosts.length > 0">
-            <OverlayDelete :post="getPost" :show="isOverlayVisible" :toggleVisible="toggleVisible" />
+            <OverlayDelete :currentItem="getPost" :show="isOverlayVisible" :toggleVisible="toggleVisible" textDial="Souhaitez vous supprimer ce commentaire ?" :funcDelete="deletePost"/>
             <div class="mx-auto max-w-7xl px-6 lg:px-8 xl:grid xl:grid-cols-2 xl:gap-x-8 xl:gap-y-20 py-24 pt-14">
                 <ul role="list" class="grid gap-x-8 gap-y-12 sm:grid-cols-2 sm:gap-y-16 xl:col-span-2">
                     <li v-for="postItem of myPosts" :key="postItem.post.id" class="bg-slate-100 p-6 rounded-lg shadow-md">

@@ -8,20 +8,20 @@ use App\Models\User;
 use App\Models\Category; 
 use App\Models\Image; 
 use App\Models\Comment; 
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Post extends Model
 {
     use HasFactory;
+    use SoftDeletes; // Activation du soft delete pour ce modèle
+
 
     protected $fillable = [
         'title',
         'content',   
         'user_id'
     ];
-
-
-    protected $dates = ['deleted_at']; // Champ pour la suppression souple
 
     /**
      * Get the user (author) that owns the post. Un post appartient à un seul utilisateur, récuperer cette utilisateur mais un utilisateur peut ecrire plusieurs post (relation many to one)
