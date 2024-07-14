@@ -6,12 +6,13 @@ use App\Models\Post;
 use Inertia\Inertia;
 use App\Models\Image;
 use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\PostStoreRequest;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\PostStoreRequest;
+use App\Http\Requests\SearchStoreRequest;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
 //  ne pas oublier d'ajouter la librairie image pour zip les image et reduire leur taille
 
 
@@ -37,26 +38,20 @@ class PostController extends Controller
      * Display a listing of the resource.
      *
      */
-    public function index(): Response
-    {
+    public function index()
+{
+    $intPage = 4;
 
-        $intPage = 4;
-        $posts = Post::latest()->paginate($intPage)->map(function ($post) {
-            return [
-                'post' => $post,
-                'categories' => $post->categories,
-                'author' => $post->user,
-                'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
-            ];
-        });
+    // Charger les relations nécessaires
+    $posts = Post::with(['user', 'categories', 'image'])
+                      ->latest();
+                     
 
-        $pagination = Post::latest()->paginate($intPage);
-
-        return Inertia::render('Posts/Index', [
-            'posts' => $posts,
-            'pagination_links' => $pagination
-        ]);
-    }
+    return Inertia::render('Posts/Index', [
+        'posts' => $posts->get(),
+        'pagination_links' => $posts->paginate($intPage)
+    ]);
+}
 
     /**
      * Show the form for creating a new resource.
@@ -105,7 +100,7 @@ class PostController extends Controller
                 $fileName = time() . '_' . $image->getClientOriginalName();
     
                 // Stocker l'image dans le dossier "images" du stockage public
-                $filePath = $image->storeAs('/images', $fileName, 'public');
+                $filePath = $image->storeAs('images', $fileName, 'public');
     
                 // Créer une nouvelle instance d'Image pour l'associer au post
                 $image = new Image();
@@ -116,15 +111,15 @@ class PostController extends Controller
             } else {
                 // Si aucun fichier n'est téléchargé, insérer l'URL de l'image par défaut
                 $image = new Image();
-                $image->path = "/images/default-image.jpg";
+                $image->path = "images/default-image.jpg";
                 $image->post()->associate($post);
                 $image->save();
             }
         }
     
         // Rediriger avec un message de succès
-        return redirect()->route('post.list')
-                         ->with('success', 'Post created successfully!');
+        return Redirect::route('post.list')
+        ->with('message', 'Article crée avec succès!');
     }
 
     /**
@@ -146,44 +141,24 @@ class PostController extends Controller
          // Récupérer l'utilisateur authentifié
          $authUserId = $this->user->id;
      
-        
-    // Vérifier s'il y a des commentaires de l'utilisateur authentifié sur ce post
-    $authUserComments = $post->comments()->where('user_id', $authUserId)->exists();
-
-    // Si l'utilisateur a des commentaires sur ce post, les récupérer et les fusionner avec les autres commentaires
-    if ($authUserComments) {
-        $authUserComments = $post->comments()->where('user_id', $authUserId)->latest()->get()->map(function ($comment) {
-            return [
-                'comment' => $comment,
-                'author' => $comment->user,
-            ];
-        });
-        
-        $otherComments = $post->comments()->where('user_id', '!=', $authUserId)->latest()->get()->map(function ($comment) {
-            return [
-                'comment' => $comment,
-                'author' => $comment->user,
-            ];
-        });
-
-        // Fusionner les deux listes en plaçant les commentaires de l'utilisateur authentifié en premier
-        $comments = $authUserComments->merge($otherComments);
-    } else {
-        // Si l'utilisateur n'a pas de commentaires sur ce post, récupérer simplement tous les commentaires
-        $comments = $post->comments()->latest()->get()->map(function ($comment) {
-            return [
-                'comment' => $comment,
-                'author' => $comment->user,
-            ];
-        });
-    }
+         // Récupérer tous les commentaires avec les informations de l'auteur (user)
+         $comments = $post->comments()->with('user')->get()->sortByDesc('created_at');
+     
+         // Partitionner les commentaires en ceux de l'utilisateur authentifié et les autres
+         [$authUserComments, $otherComments] = $comments->partition(function ($comment) use ($authUserId) {
+             return $comment->user_id == $authUserId;
+         });
+     
+         // Fusionner les deux collections
+         $mergedComments = $authUserComments->merge($otherComments);
      
          return Inertia::render('Posts/Show', [
              'post' => $article,
-             'comments' => $comments,
+             'comments' => $mergedComments,
              'userID' => $authUserId,
          ]);
      }
+     
      
         
 
@@ -223,7 +198,7 @@ class PostController extends Controller
             // je crée un nom pour cette image
             $fileName = time() . '_' . $image->getClientOriginalName();
             // je stock l'image dans le dossier storage/images
-            $filePath = $image->storeAs('/images', $fileName, 'public');
+            $filePath = $image->storeAs('images', $fileName, 'public');
 
             // si l'article a une image
             if ($post->image) {              
@@ -232,7 +207,7 @@ class PostController extends Controller
                 $oldImage = $post->image->path;
 
                 // si l'ancienne image n'est pas l'image par defaut (pour eviter de la supprimer dans le storage)
-                if($oldImage !== "/images/default-image.jpg") {
+                if($oldImage !== "images/default-image.jpg") {
                     
                     // je verifie que l'ancienne image existe dans le storage avant de le supprimer
                     if(Storage::disk("public")->exists($oldImage)) {
@@ -247,9 +222,10 @@ class PostController extends Controller
             } 
         }
     
-        // Redirige avec un message de succès
-        return redirect()->route('post.list')
-                         ->with('success', 'Post updated successfully!');
+         // Rediriger avec un message de succès
+         return Redirect::route('post.user')
+         ->with('message', 'Article modifié avec succès!');
+ 
     }
     
 
@@ -259,8 +235,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-        return redirect()->route('post.user')
-        ->with('success', 'Article supprimé avec succès!');
+         // Rediriger avec un message de succès
+         return Redirect::route('post.user')
+         ->with('message', 'Article supprmé avec succès!');
     }
 
      /**
@@ -286,8 +263,9 @@ class PostController extends Controller
             'myPosts' => $posts,
             'pagination_links' => $pagination
         ]);
-
      }
 
-     
+
+   
+ 
 }

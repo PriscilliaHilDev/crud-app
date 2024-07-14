@@ -7,8 +7,8 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
-
-
+import ToastNotification from '@/Components/ToastNotification.vue';
+import { usePage } from '@inertiajs/vue3';
 
 // Définition des props
 const props = defineProps({
@@ -17,9 +17,28 @@ const props = defineProps({
   },
 });
 
-onMounted(() => console.log('OK', props.routeName));
-
 const showingNavigationDropdown = ref(false);
+
+const page = usePage();
+const toastRef = ref(null);
+
+
+// Vérifier les messages flash au montage du composant
+onMounted(() => {
+  // Récupère le message de succès des propriétés de la page (props) fournies par Inertia.js
+  const successMessage = page.props.flash.message;
+
+  // Affiche le message de succès dans la console pour le débogage
+  console.log(successMessage);
+
+  // Vérifie si un message de succès existe et si la référence au composant ToastNotification est définie
+  if (successMessage && toastRef.value) {
+    // Utilise la méthode showSuccess du composant ToastNotification pour afficher le message de succès
+    toastRef.value.showSuccess(successMessage);
+  }
+});
+
+defineExpose({ toastRef });
 
 </script>
 
@@ -51,10 +70,15 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <NavLink :href="route('search')" :active="route().current('search')">
                                     Recherche
                                 </NavLink>
                             </div>
+                            <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('test.index')" :active="route().current('test.index')">
+                                    Test
+                                </NavLink>
+                            </div> -->
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -145,7 +169,7 @@ const showingNavigationDropdown = ref(false);
                         </ResponsiveNavLink>
                     </div>
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <ResponsiveNavLink :href="route('search')" :active="route().current('search')">
                             Recherche
                         </ResponsiveNavLink>
                     </div>
@@ -177,6 +201,8 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Content -->
             <main>
+                <ToastNotification ref="toastRef" />
+
                 <slot />
             </main>
         </div>

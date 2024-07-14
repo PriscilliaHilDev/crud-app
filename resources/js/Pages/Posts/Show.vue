@@ -25,6 +25,11 @@ const props = defineProps({
     }
 });
 
+// contenu du formulaire
+const form = useForm({
+    content: "",
+});
+
 // par defaut les bouton pour soumettre le formulaire en cas de modification ne s'afficheront pas, mais le bouton de creation de commentaire oui
 const editMode = ref(false);
 
@@ -98,10 +103,7 @@ const cancelComment = () =>{
     form.content =''
 }
 
-// contenu du formulaire
-const form = useForm({
-    content: "",
-});
+
 
 // switcher entre la fonction creation de commentaire et la fonction edition de commentaire en fonction de editMode activé si l'utilisation clique sur le bouton modifier commentaire
 const toggleEditComment = () => {
@@ -175,13 +177,15 @@ onMounted(() => {
                         </div>
                         <!-- Liste des commentaires -->
                         <div v-else>
-                            <div v-for="comment in comments" :key="comment.comment.id" class="border-t border-gray-200 pt-4 relative">
+                            <div v-for="comment in comments" :key="comment.id" class="border-t border-gray-200 pt-4 relative">
                                 <!-- Informations sur le commentaire -->
-                                <p class="text-sm text-pink-700">Par <span class="font-semibold">{{ comment.author.name }}</span> le {{ formatDate(comment.comment.created_at) }}</p>
-                                <p class="text-gray-800 leading-relaxed mt-2">{{ comment.comment.content }}</p>
+                                <p class="text-sm text-pink-700">
+                                    Par <span class="font-semibold">{{ comment.user.name }}</span> le {{ formatDate(comment.created_at) }}
+                                </p>
+                                <p class="text-gray-800 leading-relaxed mt-2">{{ comment.content }}</p>
 
                                 <!-- Dropdown pour l'utilisateur authentifié -->
-                                <div v-if="comment.author.id === userID">
+                                <div v-if="comment.user.id === userID">
                                     <Menu as="div" class="absolute top-0 right-0 mt-2 mr-2">
                                         <!-- Bouton pour ouvrir le menu -->
                                         <MenuButton class="inline-flex items-center px-3 py-2 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
@@ -191,10 +195,10 @@ onMounted(() => {
                                         <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                             <MenuItems class="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <MenuItem v-slot="{ active }">
-                                                    <a href="#" @click="getEditMode(comment.comment)" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Modifier</a>
+                                                    <a href="#" @click="getEditMode(comment)" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Modifier</a>
                                                 </MenuItem>
                                                 <MenuItem v-slot="{ active }">
-                                                    <a href="#" @click="toggleVisible(comment.comment)" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Supprimer</a>
+                                                    <a href="#" @click="toggleVisible(comment)" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Supprimer</a>
                                                 </MenuItem>
                                             </MenuItems>
                                         </transition>

@@ -3,14 +3,16 @@ import '../css/app.css';
 import 'primevue/resources/themes/saga-blue/theme.css';      // thème de PrimeVue
 import 'primevue/resources/primevue.min.css';                // CSS principal de PrimeVue
 import 'primeicons/primeicons.css';  
-import SpeedDial from 'primevue/speeddial';
-
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
+import MultiSelect from 'primevue/multiselect';
+import InputText from 'primevue/inputtext';
+import Aura from '@primevue/themes/aura';
+import Card from 'primevue/card';
 
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -34,12 +36,22 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(PrimeVue)
+            .use(PrimeVue, {
+                theme: {
+                    preset: Aura,
+                    options: {
+                        prefix: 'p',
+                        darkModeSelector: 'system',
+                        cssLayer: false
+                    }
+                }
+             })
             .use(ToastService)
             .component('font-awesome-icon', FontAwesomeIcon)
-             // Enregistrement des composants PrimeVue globalement
-             .component('SpeedDial', SpeedDial)
-             .mount(el);
+            .component('MultiSelect', MultiSelect)
+            .component('InputText', InputText)
+            .component('Card', Card)
+            .mount(el);
     },
     progress: {
         color: '#4B5563',

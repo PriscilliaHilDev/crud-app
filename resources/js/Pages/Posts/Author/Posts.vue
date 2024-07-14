@@ -8,7 +8,6 @@ import OverlayDelete from "@/Components/OverlayDelete.vue";
 import Button from 'primevue/button';
 import { router } from '@inertiajs/vue3';
 
-
 const props = defineProps({
     myPosts: {
         type: Array,
@@ -18,11 +17,7 @@ const props = defineProps({
     }
 });
 
-// onMounted(() => {
-//     console.log('props', props.myPosts)
-// });
-
-
+const limiteCategories = ref(4);
 
 function truncatedCategories(categories) {
             return categories.slice(0, 5);
@@ -58,7 +53,6 @@ const deletePost = (post) => {
         <template v-slot:header>
             <h2 class="font-semibold text-xl">Dashboard</h2>
         </template>
-
         <div v-if="myPosts.length > 0">
             <OverlayDelete :currentItem="getPost" :show="isOverlayVisible" :toggleVisible="toggleVisible" textDial="Souhaitez vous supprimer ce commentaire ?" :funcDelete="deletePost"/>
             <div class="mx-auto max-w-7xl px-6 lg:px-8 xl:grid xl:grid-cols-2 xl:gap-x-8 xl:gap-y-20 py-24 pt-14">
@@ -72,7 +66,7 @@ const deletePost = (post) => {
                                 <font-awesome-icon icon="close" size="2x" color="#B9255F" />
                             </button>
                         </div>
-                        <img class="w-full h-48 object-cover rounded-t-lg" :src="'/storage/' + postItem.image" alt="Post image" />
+                        <img class="w-full h-48 object-cover rounded-t-lg"  :src="postItem.image ? '/storage' + postItem.image : '/storage/images/default-image.jpg'" alt="Post image" />
                         <div class="p-4">
                             <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">{{ postItem.post.title }}</h3>
                             <p class="text-sm leading-6 text-gray-700 text-justify">{{ truncateByWords(postItem.post.content, 18) }}</p>
@@ -80,7 +74,7 @@ const deletePost = (post) => {
                                 <span v-for="category in truncatedCategories(postItem.categories)" :key="category.id" class="inline-block bg-pink-200 text-pink-900 rounded-full px-3 py-1 text-sm font-semibold mr-2">
                                     {{ category.name }}
                                 </span>
-                                <span v-if="postItem.categories.length > 5" class="inline-block bg-gray-200 text-gray-700 rounded-full px-3 py-1 text-sm font-semibold mr-2">
+                                <span v-if="postItem.categories.length > limiteCategories" class="inline-block text-gray-700 px-3 py-1 text-sm font-semibold mr-2">
                                     ...
                                 </span>
                             </div>

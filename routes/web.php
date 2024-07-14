@@ -6,7 +6,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CommentController;
-
+use App\Http\Controllers\SearchController;
 
 Route::resource('posts', PostController::class);
 
@@ -41,6 +41,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/comment/{post}', [CommentController::class, 'store'])->name('comment.store');
     Route::patch('/edition-commentaire/{comment}', [CommentController::class, 'update'])->name('comment.update');
     Route::delete('/suppression-commentaire/{comment}', [CommentController::class, 'destroy'])->name('comment.destroy');
+    Route::get('/recherche', [SearchController::class, 'index'])->name('search');
+    Route::get('/recherche/articles', [SearchController::class, 'getPosts'])->name('search.posts');
+    Route::get('/recherche/resultats', [SearchController::class, 'getPostsByPage'])->name('search.posts.page');
+    Route::get('/test', [SearchController::class, 'testCode'])->name('test.index');
+    Route::get('/data-test', [SearchController::class, 'testData'])->name('test.data');
+
 
 });
 
