@@ -147,30 +147,32 @@ onMounted(() => {
         </template>
         <OverlayDelete :currentItem="getDeleteComment" :show="isOverlayVisible" :toggleVisible="toggleVisible" textDial="Souhaitez vous supprimer ce commentaire ?" :funcDelete="deleteComment"/>
         <div class="flex items-center justify-center py-32">
-            <div class="max-w-7xl  mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="max-w-7xl  mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 w-2/3">
                 <!-- Première carte - Détail de l'article -->
-                <div class="col-span-full md:col-span-2 bg-white shadow-md rounded-lg overflow-hidden">
+                <div class="col-span-full relative md:col-span-2 bg-white shadow-md rounded-lg overflow-hidden">
                     <div class="px-6 py-4 bg-gray-100">
                         <h2 class="text-xl font-semibold text-pink-900">{{ post.post.title }}</h2>
                         <p class="text-sm text-pink-900">Publié le {{ formatDate(post.post.created_at) }}</p>
                     </div>
-                    <div class="p-6 flex items-center justify-center"> <!-- Ajout des classes pour centrer -->
-                        <img :src="'/storage/' + post.image"  alt="Article Image" class="rounded-lg mb-4">
+                    <div class="p-6 flex items-center justify-center "> <!-- Ajout des classes pour centrer -->
+                        <img :src="post.image ? '/storage/' + post.image : '/images/default-image.jpg'" alt="Article Image" class="w-[400px] rounded-lg mb-4">
                     </div>
                     <div class="p-6">
-                        <p class="text-gray-700 text-justify leading-relaxed">
+                        <p class="text-gray-700 text-justify leading-relaxed mb-8 ">
                         {{ post.post.content }}
                         </p>
-                        <p class="text-xs text-right text-gray-400 mt-4">Par <span class="font-semibold">{{ post.author.name }}</span></p>
+                        <div class="p-8 absolute bottom-0 left-0 right-0">
+                            <p class="text-xs text-right text-gray-400 mt-4">Par <span class="font-semibold">{{ post.author.name }}</span></p>
+                        </div>
                     </div>
                 </div>
 
               <!-- Deuxième carte - Commentaires -->
-                <div class="col-span-full relative md:col-span-1 bg-white shadow-md rounded-lg overflow-hidden">
+                <div class="col-span-full relative md:col-span-1 w-full min-h-[500px] bg-white shadow-md rounded-lg overflow-hidden">
                     <div class="px-6 py-4 bg-gray-100">
                         <h2 class="text-xl font-semibold text-pink-900">Commentaires</h2>
                     </div>
-                    <div class="p-6 overflow-y-auto max-h-[500px]">
+                    <div class="p-6 overflow-y-auto max-h-[300px]">
                         <!-- Vérifier s'il y a des commentaires -->
                         <div v-if="comments.length === 0" class="text-gray-700">
                             Il n'y a pas encore de commentaires pour cet article.

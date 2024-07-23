@@ -4,61 +4,48 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Inertia\Inertia;
-use App\Models\Image;
-use Inertia\Response;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\Image as ImageModel;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\PostStoreRequest;
-use App\Http\Requests\SearchStoreRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
-//  ne pas oublier d'ajouter la librairie image pour zip les image et reduire leur taille
-
+use Intervention\Image\Laravel\Facades\Image as ImageFacade;
 
 class PostController extends Controller
 {
+    protected $categories;
+    protected $user;
 
-   // Déclarez les propriétés
-   protected $categories;
-   protected $user;
-
-   // Constructeur pour initialiser les propriétés
-   public function __construct()
-   {
-       // Initialisez les catégories avec toutes les catégories disponibles
-       $this->categories = Category::all();
-       
-       // Initialisez l'utilisateur authentifié
-       $this->user = Auth::user();
-       
-   }
+    // Constructor to initialize properties
+    public function __construct()
+    {
+        $this->categories = Category::all();
+        $this->user = Auth::user();
+    }
 
     /**
      * Display a listing of the resource.
-     *
      */
     public function index()
-{
-    $intPage = 4;
+    {
+        $perPage = 4;
+        $posts = Post::with(['user', 'categories', 'image'])
+                     ->latest()
+                     ->paginate($perPage);
 
-    // Charger les relations nécessaires
-    $posts = Post::with(['user', 'categories', 'image'])
-                      ->latest();
-                     
-
-    return Inertia::render('Posts/Index', [
-        'posts' => $posts->get(),
-        'pagination_links' => $posts->paginate($intPage)
-    ]);
-}
+        return Inertia::render('Posts/Index', [
+            'posts' => $posts->items(),
+            'pagination_links' => $posts,
+        ]);
+    }
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        // envoie des categories dans le multi select du formulaire de creation de post
         return Inertia::render('Posts/Create', [
             'categories_list' => $this->categories,
         ]);
@@ -69,111 +56,59 @@ class PostController extends Controller
      */
     public function store(PostStoreRequest $request)
     {
-    
-        // Les données validées seront disponibles dans $request->validated()
         $validatedData = $request->validated();
-    
-        // Créer un nouvel article avec les données validées
         $post = new Post($validatedData);
-    
-        // Attribuer l'ID de l'utilisateur connecté au champ user_id du post
         $post->user_id = $this->user->id;
-    
-        // Enregistrer le post dans la base de données
         $post->save();
-    
-        // Vérifier si le post a été correctement créé
-        if ($post) {
-    
-            // Enregistrer les catégories associées au post si elles sont présentes dans la requête
-            if ($request->has("categories")) {
-                $post->categories()->sync($request->input('categories'));
-            }
-    
-            // Enregistrer l'image de l'article si elle a été envoyée dans le formulaire
-            if ($request->hasFile('image')) {
-    
-                // Récupérer le fichier image depuis la requête
-                $image = $request->file('image');
-    
-                // Générer un nom de fichier unique pour l'image
-                $fileName = time() . '_' . $image->getClientOriginalName();
-    
-                // Stocker l'image dans le dossier "images" du stockage public
-                $filePath = $image->storeAs('images', $fileName, 'public');
-    
-                // Créer une nouvelle instance d'Image pour l'associer au post
-                $image = new Image();
-                $image->path = $filePath;
-                $image->post()->associate($post);
-                $image->save();
-    
-            } else {
-                // Si aucun fichier n'est téléchargé, insérer l'URL de l'image par défaut
-                $image = new Image();
-                $image->path = "images/default-image.jpg";
-                $image->post()->associate($post);
-                $image->save();
-            }
+
+        if ($request->has('categories')) {
+            $post->categories()->sync($request->input('categories'));
         }
-    
-        // Rediriger avec un message de succès
-        return Redirect::route('post.list')
-        ->with('message', 'Article crée avec succès!');
+
+        $this->handleImageUpload($request, $post);
+
+        return Redirect::route('post.list')->with('message', 'Article created successfully!');
     }
 
     /**
      * Display the specified resource.
-     * Fournir le post directement à la fonction show pour éviter une autre requête à la base de données dans le but de récupérer l'objet post
      */
+    public function show(Post $post)
+    {
+        $article = [
+            'post' => $post,
+            'categories' => $post->categories,
+            'author' => $post->user,
+            'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
+        ];
 
-   
-     public function show(Post $post)
-     {
-         // Accédez directement aux propriétés de l'objet $post
-         $article = [
-             'post' => $post,
-             'categories' => $post->categories,
-             'author' => $post->user,
-             'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
-         ];
-     
-         // Récupérer l'utilisateur authentifié
-         $authUserId = $this->user->id;
-     
-         // Récupérer tous les commentaires avec les informations de l'auteur (user)
-         $comments = $post->comments()->with('user')->get()->sortByDesc('created_at');
-     
-         // Partitionner les commentaires en ceux de l'utilisateur authentifié et les autres
-         [$authUserComments, $otherComments] = $comments->partition(function ($comment) use ($authUserId) {
-             return $comment->user_id == $authUserId;
-         });
-     
-         // Fusionner les deux collections
-         $mergedComments = $authUserComments->merge($otherComments);
-     
-         return Inertia::render('Posts/Show', [
-             'post' => $article,
-             'comments' => $mergedComments,
-             'userID' => $authUserId,
-         ]);
-     }
-     
-     
-        
+        $authUserId = $this->user->id;
+        $comments = $post->comments()->with('user')->get()->sortByDesc('created_at');
+
+        [$authUserComments, $otherComments] = $comments->partition(function ($comment) use ($authUserId) {
+            return $comment->user_id == $authUserId;
+        });
+
+        $mergedComments = $authUserComments->merge($otherComments);
+
+        return Inertia::render('Posts/Show', [
+            'post' => $article,
+            'comments' => $mergedComments,
+            'userID' => $authUserId,
+        ]);
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Post $post)
-    {        
+    {
         return Inertia::render('Posts/Edit', [
             'post' => $post,
-            'categories_post' => $post->categories->pluck('id'), // envoyer que les id des categories pour les selectionner initialement dans le composant multiselect
+            'categories_post' => $post->categories->pluck('id'),
             'categories_list' => $this->categories,
-            'image' => $post->image
+            'image' => $post->image,
         ]);
-
     }
 
     /**
@@ -181,53 +116,17 @@ class PostController extends Controller
      */
     public function update(PostStoreRequest $request, Post $post)
     {
-
-        // Les données validées seront disponibles dans $request->validated()
         $validatedData = $request->validated();
-
         $post->update($validatedData);
 
         if ($request->has('categories')) {
             $post->categories()->sync($request->input('categories'));
         }
-        
-        if ($request->hasFile('image')) {
 
-            // j'enregistre l'image dans une variable
-            $image = $request->file('image');
-            // je crée un nom pour cette image
-            $fileName = time() . '_' . $image->getClientOriginalName();
-            // je stock l'image dans le dossier storage/images
-            $filePath = $image->storeAs('images', $fileName, 'public');
+        $this->handleImageUpload($request, $post);
 
-            // si l'article a une image
-            if ($post->image) {              
-
-                // je stock l'ancienne image dans une variable
-                $oldImage = $post->image->path;
-
-                // si l'ancienne image n'est pas l'image par defaut (pour eviter de la supprimer dans le storage)
-                if($oldImage !== "images/default-image.jpg") {
-                    
-                    // je verifie que l'ancienne image existe dans le storage avant de le supprimer
-                    if(Storage::disk("public")->exists($oldImage)) {
-                       
-                        (Storage::disk("public")->delete($oldImage));
-                   
-                    }
-    
-                // Mettre à jour le chemin de l'image existante
-                $post->image->update(['path' => $filePath]);
-                }
-            } 
-        }
-    
-         // Rediriger avec un message de succès
-         return Redirect::route('post.user')
-         ->with('message', 'Article modifié avec succès!');
- 
+        return Redirect::route('post.user')->with('message', 'Article updated successfully!');
     }
-    
 
     /**
      * Remove the specified resource from storage.
@@ -235,37 +134,87 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-         // Rediriger avec un message de succès
-         return Redirect::route('post.user')
-         ->with('message', 'Article supprmé avec succès!');
+
+        return Redirect::route('post.user')->with('message', 'Article deleted successfully!');
     }
 
-     /**
-     * Fonction pour afficher les posts de l'utilisateur connecté
+    /**
+     * Display posts of the authenticated user.
      */
-     public function postsUser()
-     {
- 
-        $getPostsUser = Post::latest()->paginate(4)->where('user_id', $this->user->id);
-         
-        $posts = $getPostsUser->map(function ($post) {
+    public function postsUser()
+    {
+        $posts = Post::where('user_id', $this->user->id)
+                     ->latest()
+                     ->paginate(4);
+
+        $postsData = $posts->map(function ($post) {
             return [
                 'post' => $post,
-                'categories'=> $post->categories,
+                'categories' => $post->categories,
                 'image' => $post->image ? $post->image->path : "/images/default-image.jpg",
             ];
         });
 
-        $pagination = Post::latest()->where('user_id', $this->user->id)->paginate(4);
-
-         // Retourner une vue avec les posts
-         return Inertia::render('Posts/Author/Posts', [
-            'myPosts' => $posts,
-            'pagination_links' => $pagination
+        return Inertia::render('Posts/Author/Posts', [
+            'myPosts' => $postsData,
+            'pagination_links' => $posts,
         ]);
-     }
+    }
+
+    private function handleImageUpload(Request $request, Post $post)
+    {
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $fileName = time() . '_' . $image->getClientOriginalName();
+            $filePath = '/images/' . $fileName;
+        
+            // Créez une instance de l'image en utilisant Intervention Image
+            $imageInstance = ImageFacade::read($image); // Utilisation correcte de make()
+        
+            // Enregistrez l'image originale
+            Storage::disk('public')->put($filePath, (string) $imageInstance->encode());
+        
+            // Créez une miniature
+            $thumbnailPath = '/images/thumbnails/' . $fileName;
+            $thumbnailImageInstance = $imageInstance->resize(300, 250, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            Storage::disk('public')->put($thumbnailPath, (string) $thumbnailImageInstance->encode());
+        
+            // Vérifiez si une image précédente existe (update)
+            if ($post->image) {
+                // Supprimez l'ancienne image et la miniature si elles existent
+                if (Storage::disk('public')->exists($post->image->path)) {
+                    Storage::disk('public')->delete($post->image->path);
+                }
+                if (Storage::disk('public')->exists($post->image->thumbnail_path)) {
+                    Storage::disk('public')->delete($post->image->thumbnail_path);
+                }
+        
+                // Mettez à jour l'enregistrement de l'image
+                $post->image->update([
+                    'path' => $filePath,
+                    'thumbnail_path' => $thumbnailPath
+                ]);
+            } else {
+                // Créez un nouvel enregistrement d'image (create)
+                $imageModel = new ImageModel();
+                $imageModel->path = $filePath;
+                $imageModel->thumbnail_path = $thumbnailPath;
+                $imageModel->post()->associate($post);
+                $imageModel->save();
+            }
+        } else {
+            // Gérez le cas où aucune image n'est téléchargée
+            if (!$post->image) { // Vérifiez si le post n'a pas déjà d'image
+                $imageModel = new ImageModel();
+                $imageModel->path = "/images/default-image.jpg"; // Chemin correct
+                $imageModel->thumbnail_path = "/images/default-thumbnail.jpg"; // Chemin correct
+                $imageModel->post()->associate($post);
+                $imageModel->save();
+            }
+        }
+    }
 
 
-   
- 
 }

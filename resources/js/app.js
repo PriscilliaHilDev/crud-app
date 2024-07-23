@@ -13,6 +13,7 @@ import MultiSelect from 'primevue/multiselect';
 import InputText from 'primevue/inputtext';
 import Aura from '@primevue/themes/aura';
 import Card from 'primevue/card';
+import Paginator from 'primevue/paginator';
 
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -51,6 +52,7 @@ createInertiaApp({
             .component('MultiSelect', MultiSelect)
             .component('InputText', InputText)
             .component('Card', Card)
+            .component('Paginator', Paginator)
             .mount(el);
     },
     progress: {
