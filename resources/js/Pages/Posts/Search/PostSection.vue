@@ -135,7 +135,7 @@ const onSeeMore = () => {
         <Link :href="route('post.show', { post: post })">
           <div class="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col h-full">
             <!-- En-tête de la carte avec une image -->
-            <img alt="user header" :src="'/storage/' + post.image.path" class="w-full h-40 object-cover" />
+            <img alt="user header" :src="post?.image ? '/storage' + post.image.path : '/storage/images/default-image.jpg'" class="w-full h-40 object-cover" />
             <!-- Contenu de la carte -->
             <div class="flex flex-col flex-grow p-6">
               <h2 class="text-xl font-semibold text-gray-800 truncate">{{ post.title }}</h2>

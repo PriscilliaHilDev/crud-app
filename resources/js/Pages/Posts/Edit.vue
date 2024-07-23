@@ -74,14 +74,14 @@ const updatePost = () => {
         onSuccess: () => {
             console.log(form)
         }, onError: (e) => {
-            console.log('error', form)
+            console.log('error', e)
         }
     });
 };
 
 
 onMounted(() => {
-
+    console.log(props.image)
 });
 
 </script>
@@ -101,7 +101,7 @@ onMounted(() => {
                     <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Modification de l'article</h2>
                     <p class="mt-2 text-lg leading-8 py-8 text-gray-600">{{ post.title }}</p>
                     <div class="flex justify-center">
-                        <img class="rounded-2xl object-cover w-full sm:max-w-none sm:w-[400px] h-[250px] sm:h-auto" :src="'/storage/' + image.path" alt="image de l'article" />
+                        <img class="rounded-2xl object-cover w-full sm:max-w-none sm:w-[400px] h-[250px] sm:h-auto" :src="image?.path ? '/storage/' + image.path : '/storage/images/default-image.jpg'" alt="image de l'article" />
                     </div>
                 </div>
                  <!-- Image de l'article -->

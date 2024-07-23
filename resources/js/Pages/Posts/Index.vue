@@ -136,7 +136,7 @@ console.log(props.posts)
                   </div>
                 </header>
                 <img
-                  :src="postItem.image ? '/storage' + postItem.image.path : '/storage/images/default-image.jpg'"
+                  :src="postItem?.image ? '/storage' + postItem.image.path : '/storage/images/default-image.jpg'"
                   alt="image de l'article"
                   class="absolute inset-0 -z-10 h-full w-full object-cover object-center"
                 />
