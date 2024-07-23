@@ -183,11 +183,14 @@ class PostController extends Controller
         
             // Vérifiez si une image précédente existe (update)
             if ($post->image) {
-                // Supprimez l'ancienne image et la miniature si elles existent
-                if (Storage::disk('public')->exists($post->image->path)) {
+                
+                // Supprimez l'ancienne image si elle existe
+                if ($post->image->path && Storage::disk('public')->exists($post->image->path)) {
                     Storage::disk('public')->delete($post->image->path);
                 }
-                if (Storage::disk('public')->exists($post->image->thumbnail_path)) {
+
+                // Supprimez l'ancienne miniature si elle existe
+                if ($post->image->thumbnail_path && Storage::disk('public')->exists($post->image->thumbnail_path)) {
                     Storage::disk('public')->delete($post->image->thumbnail_path);
                 }
         

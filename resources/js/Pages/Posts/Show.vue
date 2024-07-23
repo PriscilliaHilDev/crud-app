@@ -155,7 +155,8 @@ onMounted(() => {
                         <p class="text-sm text-pink-900">Publié le {{ formatDate(post.post.created_at) }}</p>
                     </div>
                     <div class="p-6 flex items-center justify-center "> <!-- Ajout des classes pour centrer -->
-                        <img :src="post?.image ? '/storage/' + post.image : '/storage/images/default-image.jpg'" alt="Article Image" class="w-[400px] rounded-lg mb-4">
+                        <img :src="post?.image ? '/storage/' + post.image : '/storage/images/default-image.jpg'" alt="Article Image" 
+                        class="w-[500px] max-h-[400px] rounded-lg mb-4">
                     </div>
                     <div class="p-6">
                         <p class="text-gray-700 text-justify leading-relaxed mb-8 ">
@@ -172,7 +173,7 @@ onMounted(() => {
                     <div class="px-6 py-4 bg-gray-100">
                         <h2 class="text-xl font-semibold text-pink-900">Commentaires</h2>
                     </div>
-                    <div class="p-6 overflow-y-auto max-h-[300px]">
+                    <div class="p-6 overflow-y-auto max-h-[400px]">
                         <!-- Vérifier s'il y a des commentaires -->
                         <div v-if="comments.length === 0" class="text-gray-700">
                             Il n'y a pas encore de commentaires pour cet article.
