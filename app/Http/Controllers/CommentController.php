@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
-use App\Http\Requests\CommentStoreRequest;
+use App\Events\CommentAdded;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\CommentStoreRequest;
 
 
 
@@ -41,6 +43,13 @@ class CommentController extends Controller
 
         // Sauvegarder le commentaire dans la base de données
         $comment->save();
+
+        // Vérifiez que l'auteur du post n'est pas celui qui commente
+        if ($post->user_id !== auth()->id()) {
+            // Déclencher l'événement CommentAdded
+            event(new CommentAdded($comment));
+        }
+        // CommentAdded::dispatch($comment);
 
         // Redirection avec un message de succès
         return redirect()->route('post.show', ['post' => $post])->with('success', 'Commentaire ajouté avec succès !');

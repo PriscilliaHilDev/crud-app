@@ -131,9 +131,9 @@ const createComment = () => {
 };
 
 // au montage du composant
-onMounted(() => {
-  console.log(props.comments)
-});
+// onMounted(() => {
+//   console.log(props.comments)
+// });
 
 
 </script>
@@ -216,7 +216,6 @@ onMounted(() => {
                         <form @submit.prevent="toggleEditComment" >
                             <div class="mb-4">
                                 <textarea id="comment" name="content" v-model="form.content" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-pink-400 focus:ring focus:ring-pink-400 focus:ring-opacity-50"></textarea>
-                                <InputError :message="form.errors.content" />
                             </div>
                             <div v-if='editMode' class="flex space-x-2">
                                 <button type="submit" class="inline-block bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 focus:outline-none focus:bg-pink-600">Modifier</button>

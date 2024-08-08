@@ -1,8 +1,6 @@
 import './bootstrap';
 import '../css/app.css';
-import 'primevue/resources/themes/saga-blue/theme.css';      // thème de PrimeVue
-import 'primevue/resources/primevue.min.css';                // CSS principal de PrimeVue
-import 'primeicons/primeicons.css';  
+
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';

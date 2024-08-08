@@ -1,12 +1,16 @@
 <?php
 
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CommentController;
+use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ProfileController;
+
 
 Route::resource('posts', PostController::class);
 
@@ -18,7 +22,6 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 })->name('Home');
-
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -46,8 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/recherche/resultats', [SearchController::class, 'getPostsByPage'])->name('search.posts.page');
     Route::get('/test', [SearchController::class, 'testCode'])->name('test.index');
     Route::get('/data-test', [SearchController::class, 'testData'])->name('test.data');
-
-
 });
+
+
 
 require __DIR__.'/auth.php';

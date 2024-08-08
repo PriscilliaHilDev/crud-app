@@ -59,7 +59,7 @@ console.log(props.posts)
                     v-for="postItem in posts"
                     :key="postItem.id"
                   >
-                  <Link class="-m-1.5 p-1.5" :href="route('post.show', { post: postItem })">
+                  <!-- <Link class="-m-1.5 p-1.5" :href="route('post.show', { post: postItem })"> -->
 
                     <header class="relative z-20">
                       <div class="container mx-auto">
@@ -159,9 +159,11 @@ console.log(props.posts)
                       class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10 py-10 sm:py-10 flex flex-col items-center text-center"
                     >
                       <div class="mx-auto max-w-2xl">
-                        <h2 class="font-bold tracking-tight text-slate-600 text-2xl sm:text-2xl lg:text-3xl xl:text-4xl">
-                          {{ truncateByWords(postItem.title, 7) }}
-                        </h2>
+                        <Link class="-m-1.5 p-1.5" :href="route('post.show', { post: postItem })">
+                          <h2 class="font-bold tracking-tight text-slate-600 text-2xl sm:text-2xl lg:text-3xl xl:text-4xl">
+                            {{ truncateByWords(postItem.title, 7) }}
+                          </h2>
+                        </Link>
                         <p class="mt-6 sm:text-md lg:text-lg xl:text-xl leading-6 sm:leading-7 lg:leading-8 xl:leading-9 text-slate-600">
                           {{ truncateByWords(postItem.content, 18) }}
                         </p>
@@ -171,7 +173,7 @@ console.log(props.posts)
                       <p class="py-2 font-bold text-slate-800 text-md">Auteur : {{ postItem.user.name }}</p>
                       <p class="py-2 text-slate-800 text-sm">Publié le {{ formatDate(postItem.created_at) }}</p>
                     </div>
-                  </Link>
+                  <!-- </Link> -->
                   </div>
                 </div>
               <Paginator :pagination="pagination_links" />

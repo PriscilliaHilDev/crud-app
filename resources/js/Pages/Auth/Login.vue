@@ -27,6 +27,10 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+const loginWith = (provider) => {
+    window.location.href = `/auth/${provider}`;
+};
 </script>
 
 <template>
@@ -85,10 +89,28 @@ const submit = () => {
                     Mot de passe oublié ?
                 </Link>
             </div>
-            <div class="flex items-center justify-center my-6">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Se Connecter
-                </PrimaryButton>
+            <div class="flex flex-col items-center justify-center my-6">
+                <div class="my-2">
+                    <PrimaryButton
+                        class="ms-4 w-64 flex items-center justify-center text-center"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Se Connecter
+                    </PrimaryButton>
+                </div>
+                <div class="my-2">
+                    <span class="text-gray-600">ou</span>
+                </div>
+                <div class="my-2">
+                    <button
+                        @click="loginWith('google')"
+                        class="flex items-center justify-center w-64 p-2 text-white bg-red-800 rounded-lg hover:bg-red-800 transition duration-300 ease-in-out"
+                    >
+                        <font-awesome-icon icon="g" size="2x" color="#FFFFFF" class="mr-2" />
+                        Connexion avec Google
+                    </button>
+                </div>
             </div>
         </form>
         <div class="flex flex-inline justify-end my-5">

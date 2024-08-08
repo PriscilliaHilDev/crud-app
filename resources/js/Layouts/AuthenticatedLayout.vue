@@ -1,50 +1,6 @@
-<script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
-import ToastNotification from '@/Components/ToastNotification.vue';
-import { usePage } from '@inertiajs/vue3';
-
-// Définition des props
-const props = defineProps({
-  routeName: {
-    type: String,
-  },
-});
-
-const showingNavigationDropdown = ref(false);
-
-const page = usePage();
-const toastRef = ref(null);
-
-
-// Vérifier les messages flash au montage du composant
-onMounted(() => {
-  // Récupère le message de succès des propriétés de la page (props) fournies par Inertia.js
-  const successMessage = page.props.flash.message;
-
-  // Affiche le message de succès dans la console pour le débogage
-  console.log(successMessage);
-
-  // Vérifie si un message de succès existe et si la référence au composant ToastNotification est définie
-  if (successMessage && toastRef.value) {
-    // Utilise la méthode showSuccess du composant ToastNotification pour afficher le message de succès
-    toastRef.value.showSuccess(successMessage);
-  }
-});
-
-defineExpose({ toastRef });
-
-</script>
-
 <template>
     <div>
-        <div class=" relative min-h-screen bg-pink-100">
+        <div class="relative min-h-screen bg-pink-100">
             <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +14,6 @@ defineExpose({ toastRef });
                             </div>
 
                             <!-- Navigation Links -->
-                            
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('post.create')" :active="route().current('post.create')">
                                     Ecrire un article
@@ -74,11 +29,6 @@ defineExpose({ toastRef });
                                     Recherche
                                 </NavLink>
                             </div>
-                            <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('test.index')" :active="route().current('test.index')">
-                                    Test
-                                </NavLink>
-                            </div> -->
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -157,7 +107,6 @@ defineExpose({ toastRef });
                     :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                     class="sm:hidden"
                 >
-                   
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Ecrire un article
@@ -193,7 +142,7 @@ defineExpose({ toastRef });
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white shadow" >
+            <header class="bg-white shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
@@ -201,10 +150,66 @@ defineExpose({ toastRef });
 
             <!-- Page Content -->
             <main>
-                <ToastNotification ref="toastRef" />
-
+                <PushNotification ref="notificationManager" :post="postToPush" /> <!-- Utiliser le composant ici -->
                 <slot />
             </main>
         </div>
     </div>
 </template>
+
+<script setup>
+import { ref } from 'vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import NavLink from '@/Components/NavLink.vue';
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { Link } from '@inertiajs/vue3';
+import { onMounted } from 'vue';
+import PushNotification from '@/Components/PushNotification.vue'; // Importer le composant
+
+import { usePage } from '@inertiajs/vue3';
+
+// Définition des props
+const props = defineProps({
+  routeName: {
+    type: String,
+  },
+});
+
+const showingNavigationDropdown = ref(false);
+const page = usePage();
+const notificationManager = ref(null);
+const postToPush = ref(null);
+
+
+// Fonction pour tester la notification push
+const testPushNotification = () => {
+    if (notificationManager.value) {
+        notificationManager.value.showPush('Test Author', 'Dans un monde rempli de rêves, chaque instant est une occasion de découvrir la beauté qui nous entoure et nous inspire'); // Appeler la méthode
+    }
+};
+
+// Vérifier les messages flash au montage du composant
+onMounted(() => {
+    const userId = page.props.auth.user.id;
+
+    if (window.Echo && userId) {
+        window.Echo.private(`user.${userId}`)
+            .listen('.comment-added', (e) => {
+                if (notificationManager.value) {
+                    // Utilisez la méthode showPush pour afficher le message
+                    postToPush.value = e.comment.post;
+                    notificationManager.value.showPush(e.comment.author, e.comment.message, e.comment.createdAt);
+                }
+            });
+    }   
+
+    const successMessage = page.props.flash.message;
+    if (successMessage && notificationManager.value) {
+        // Utilisez la méthode showToast pour afficher le message de succès
+        notificationManager.value.showToast(successMessage);
+    }
+});
+
+</script>

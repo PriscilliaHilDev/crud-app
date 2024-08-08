@@ -1,5 +1,5 @@
 <template>
-    <Toast />
+    <Toast/>
 </template>
   
 <script setup>
