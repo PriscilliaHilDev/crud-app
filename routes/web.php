@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/recherche/articles', [SearchController::class, 'getPosts'])->name('search.posts');
     Route::get('/recherche/resultats', [SearchController::class, 'getPostsByPage'])->name('search.posts.page');
     Route::get('/test', [SearchController::class, 'testCode'])->name('test.index');
-    Route::get('/data-test', [SearchController::class, 'testData'])->name('test.data');
+    // Route::get('/data-test', [SearchController::class, 'testData'])->name('test.data');
 });
 
 
