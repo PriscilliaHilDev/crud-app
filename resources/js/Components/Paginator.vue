@@ -1,7 +1,6 @@
 <script setup>
 // Importer les fonctions nécessaires depuis Vue et Inertia.js
 import { ref, onMounted, computed, onUnmounted } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
 
 // Définir les propriétés attendues pour ce composant
 const props = defineProps({
@@ -21,34 +20,14 @@ const totalPages = computed(() => Math.ceil(props.pagination.total / props.pagin
 const onPageChange = (event) => {
   const page = event.page + 1; // Ajuster la page pour commencer à 1 au lieu de 0
   const url = `${props.pagination.path}?page=${page}`; // Créer l'URL pour la page demandée
-  // Effectuer une requête GET avec Inertia pour charger la nouvelle page sans rafraîchir
-  Inertia.get(url, {}, {
-    preserveState: true, // Préserver l'état actuel de la page sans recharger
-    replace: true, // Remplacer l'historique de la page
-    onSuccess: (page) => {
-      console.log('Page loaded:', page); // Log lorsque la page est chargée avec succès
-    },
-    onError: (error) => {
-      console.error('Failed to load page:', error); // Log en cas d'échec de chargement de la page
-    }
-  });
+  window.location.href = url; // Rediriger vers l'URL de la page demandée
 };
 
-// Fonction pour aller à une page spécifique
+// Fonction pour aller à une page spécifique sans Inertia
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) { // Vérifier si la page demandée est dans la plage valide
     const url = `${props.pagination.path}?page=${page}`; // Créer l'URL pour la page demandée
-    // Effectuer une requête GET avec Inertia pour charger la nouvelle page sans rafraîchir
-    Inertia.get(url, {}, {
-      preserveState: true, // Préserver l'état actuel de la page sans recharger
-      replace: true, // Remplacer l'historique de la page
-      onSuccess: (page) => {
-        console.log('Page loaded:', page); // Log lorsque la page est chargée avec succès
-      },
-      onError: (error) => {
-        console.error('Failed to load page:', error); // Log en cas d'échec de chargement de la page
-      }
-    });
+    window.location.href = url; // Rediriger vers l'URL de la page demandée
   }
 };
 
@@ -67,7 +46,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize); // Retirer l'écouteur pour éviter les fuites de mémoire
 });
 </script>
-
 
 <template>
   <div class="absolute bottom-0 right-0 left-0">
