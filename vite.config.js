@@ -17,4 +17,8 @@ export default defineConfig({
             },
         }),
     ],
+    server: {
+        host: '0.0.0.0', // Permet d'accéder au serveur depuis l'extérieur du conteneur
+        port: 5173,      // Assurez-vous que ce port est ouvert
+    },
 });
