@@ -76,7 +76,7 @@ onMounted(() => console.log('props', $page));
             <div class="mx-auto max-w-7xl sm:px-6 sm:py-32 lg:px-8">
             <div class="relative bg-pink-900 px-6 lg:flex lg:rounded-2xl h-[700px]">
                 <div class="mx-auto max-w-md lg:mx-5 flex items-center lg:py-40 lg:text-left">
-                    <h2 class="font-bold tracking-tight text-white lg:text-5xl text-3xl lg:py-10 pt-10 text-center">Ecrire, imaginer, penser et noter tout ce qui vous passe par la tete.</h2>
+                    <h2 class="font-bold tracking-tight text-white lg:text-5xl text-3xl lg:py-10 pt-10 text-center">Ecrivez et partagez vos plus belles pensées avec nous. </h2>
                 </div>
                 <div class="relative flex item-center lg:justify-center py-10">
                     <img class=" rounded-full" src="/storage/images/home-blog.jpg" alt="App screenshot" />

@@ -89,42 +89,39 @@ const loginWith = (provider) => {
                     Mot de passe oublié ?
                 </Link>
             </div>
-            <div class="flex flex-col items-center justify-center my-6">
-                <div class="my-2">
-                    <PrimaryButton
-                        class="ms-4 w-64 flex items-center justify-center text-center"
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing"
-                    >
-                        Se Connecter
-                    </PrimaryButton>
-                </div>
-                <div class="my-2">
-                    <span class="text-gray-600">ou</span>
-                </div>
-                <div class="my-2">
-                    <button
-                        @click="loginWith('google')"
-                        class="flex items-center justify-center w-64 p-2 text-white bg-red-800 rounded-lg hover:bg-red-800 transition duration-300 ease-in-out"
-                    >
-                        <font-awesome-icon icon="g" size="2x" color="#FFFFFF" class="mr-2" />
-                        Connexion avec Google
-                    </button>
-                </div>
+
+            <!-- Ajout des classes flex et justify-center pour centrer le bouton -->
+            <div class="flex justify-center my-2">
+                <PrimaryButton
+                    class="w-64 flex items-center justify-center text-center"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
+                    Se Connecter
+                </PrimaryButton>
             </div>
         </form>
+
+        <!-- Section hors du formulaire -->
+        <div class="flex flex-col items-center justify-center my-6">
+            <div class="my-2">
+                <span class="text-gray-600">ou</span>
+            </div>
+            <div class="my-2">
+                <button
+                    @click="loginWith('google')"
+                    class="flex items-center justify-center w-64 p-2 text-white bg-red-800 rounded-lg hover:bg-red-800 transition duration-300 ease-in-out"
+                >
+                    <font-awesome-icon icon="g" size="2x" color="#FFFFFF" class="mr-2" />
+                    Connexion avec Google
+                </button>
+            </div>
+        </div>
+
         <div class="flex flex-inline justify-end my-5">
             <a class="font-bold hover:underline hover:underline-offset-8  text-gray-600 hover:text-pink-700 rounded active:no-underline focus:ring-1 focus:ring-offset-1 focus:underline-none focus:ring-pink-500" :href="route('register')" >
                 Je n'ai pas encore de compte ?
             </a>
         </div>
-        <!-- <div class="group/write my-5 mx-0">
-            <span class="group-hover/write:invisible transition ">
-                Je n'ai pas encore de compte ?
-            </span>
-            <span class="group/link invisible group-hover/write:visible">
-                S'inscrire
-            </span>
-        </div> -->
     </GuestLayout>
 </template>

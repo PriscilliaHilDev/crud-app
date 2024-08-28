@@ -155,11 +155,13 @@ const onSeeMore = () => {
 
     <!-- Bouton pour charger plus de posts -->
     <div v-if="!isAllTab" class="flex flex-col justify-center items-center mb-2">
-      <!-- Affichage du nombre d'articles vus et total -->
-      <span v-if='!loading' class="text-gray-700 text-base py-4">
-        <strong class="text-blue-600">{{ postSeen }}</strong> articles vus sur 
-        <strong class="text-blue-600">{{ pagination.total }}</strong>
-      </span>
+    <!-- Affichage du nombre d'articles vus et total -->
+    <span class="text-gray-700 text-base py-4">
+      <strong class="text-blue-600">{{ postSeen }}</strong> articles vus sur 
+      <strong class="text-blue-600">{{ pagination.total }}</strong>
+    </span>
+    
+      <!-- Bouton Voir plus -->
       <button v-if='hasMore && !loading' @click="loadMorePosts" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
         Voir plus
       </button>

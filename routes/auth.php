@@ -9,7 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\Auth\AuthGoogleController;
+use App\Http\Controllers\Auth\AuthProviderController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -39,9 +39,15 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
                 ->name('password.store');
 
-    Route::get('auth/google', [AuthGoogleController::class, 'redirectToProvider'])->name('auth.google');
-
-    Route::get('auth/google/callback', [AuthGoogleController::class, 'handleProviderCallback']);
+          
+    // Redirection vers le fournisseur
+    Route::get('auth/{provider}', [AuthProviderController::class, 'redirectToProvider'])
+        ->where('provider', 'google|github');
+    
+    // Callback du fournisseur
+    Route::get('auth/{provider}/callback', [AuthProviderController::class, 'handleProviderCallback'])
+        ->where('provider', 'google|github');
+                
 });
 
 Route::middleware('auth')->group(function () {
