@@ -14,7 +14,7 @@ Avant de commencer, assurez-vous que vous disposez des outils suivants installé
 Pour obtenir le code source de l'application, clonez le dépôt GitHub :
 
 ```bash
-git clone https://github.com/votre_nom_utilisateur/crud-app.git
+git clone https://github.com/PriscilliaHilDev/crud-app.git
 cd crud-app.
 ```
 
@@ -23,7 +23,7 @@ cd crud-app.
 Si vous avez déjà l'image Docker, assurez-vous de l'avoir récupérée sur Docker Hub. Vous pouvez utiliser la commande suivante pour tirer l'image.
 
 ```bash
-docker pull your_dockerhub_username/crud-app:latest
+docker pull prishildev/crud-app-app:latest
 ```
 ## Préparer l'Environnement
 Avant de lancer les conteneurs, vous devez préparer votre environnement local en créant un fichier .env à la racine du projet. Ce fichier contient les variables d'environnement nécessaires pour que l'application fonctionne correctement.
@@ -35,13 +35,9 @@ cp .env.example .env
 ```
 Ensuite, ouvrez le fichier .env et configurez les variables en fonction de votre environnement.
 
-## Configurer la Base de Données (Docker)
+### 1. Configurer la Base de Données (Docker)
 
-Pour faire correspondre la configuration de la base de données avec celle définie dans votre fichier `docker-compose.yml`, suivez ces étapes :
-
-### 1. Vérifiez le Fichier `docker-compose.yml`
-
-Assurez-vous que votre fichier `docker-compose.yml` contient les informations suivantes pour le service MySQL :
+#### a. Assurez-vous que votre fichier `docker-compose.yml` contient les informations suivantes pour le service MySQL :
 
 ```yaml
 services:
@@ -58,7 +54,7 @@ services:
       - "3306:3306"
 ```
 
-Ajoutez dans votre .env les informations suivantes :
+#### b. Ajoutez dans votre .env les informations suivantes :
 
 ```bash
 DB_CONNECTION=mysql
@@ -68,6 +64,57 @@ DB_DATABASE=mydatabase
 DB_USERNAME=myuser
 DB_PASSWORD=myuserpassword
 ```
+### 2. Configuration de Pusher avec Laravel Broadcasting et Laravel Echo
+Pour configurer Pusher Channels avec Laravel Broadcasting et Laravel Echo dans le cadre de votre projet Docker, suivez ces étapes :
+
+#### a. Créer un compte Pusher
+Rendez-vous sur [pusher.com](https://pusher.com/) et inscrivez-vous pour créer un compte.
+Une fois inscrit, connectez-vous puis créer une nouvelle application Pusher Channels et récupérez les informations suivantes :
+
+```bash
+PUSHER_APP_ID
+PUSHER_APP_KEY
+PUSHER_APP_SECRET
+PUSHER_APP_CLUSTER
+```
+
+#### b. Configurer le fichier .env
+Ajoutez ou mettez à jour les variables d'environnement dans votre fichier .env avec les informations obtenues à partir de votre compte Pusher.
+
+```bash 
+PUSHER_APP_ID=your-pusher-app-id
+PUSHER_APP_KEY=your-pusher-key
+PUSHER_APP_SECRET=your-pusher-secret
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=your-pusher-cluster
+```
+### 3. Configurer Google OAuth avec Laravel Socialite
+
+#### a. Accédez à Google Cloud Console
+Identifiez-vous avec votre compte Google, puis créez un nouveau projet en suivant les instructions à l'écran.
+
+#### b. Configurer les Identifiants OAuth 2.0
+
+- Une fois le projet créé, accédez au menu de gauche et sélectionnez "API et services".
+- Cliquez sur "Identifiants" dans le sous-menu.
+- Cliquez sur "Créer des identifiants" et choisissez "ID client OAuth".
+- Sélectionnez "Application Web" comme type d'application.
+- Ajoutez l'URI de redirection autorisé, par exemple : http://localhost:8000/auth/google/callback.
+- Cliquez sur "Créer" puis notez l'ID du client et le code secret du client.
+
+#### c. Mettre à jour le fichier .env
+
+Modifier les informations suivantes à votre fichier .env :
+
+```bash
+GOOGLE_CLIENT_ID=your_client_id_here
+GOOGLE_CLIENT_SECRET=your_client_secret_here
+GOOGLE_REDIRECT=http://localhost:8000/auth/google/callback
+```
+
+Remplacez "your_client_id_here" et "your_client_secret_here" par les valeurs que vous avez obtenues depuis Google Cloud Console.
 
 ## Lancer les Conteneurs
 Pour démarrer les conteneurs Docker et préparer l'application, exécutez la commande suivante :
@@ -165,4 +212,4 @@ docker-compose up --build
 ```
 
 En suivant ces étapes, vous serez en mesure de lancer et de faire fonctionner votre projet Laravel et Vue.js avec Docker.
-Ce guide détaillé vous permettra de cloner, configurer, et lancer votre application Lara
+Ce guide détaillé vous permettra de cloner, configurer, et lancer votre application Laravel.
