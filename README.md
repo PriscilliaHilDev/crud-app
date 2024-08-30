@@ -1,66 +1,168 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Crud-App
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Crud-App est une application web construite avec Laravel et Vue.js, utilisant Docker pour le déploiement. Ce guide vous aide à configurer et déployer l'application à l'aide de Docker.
 
-## About Laravel
+## Prérequis
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Avant de commencer, assurez-vous que vous disposez des outils suivants installés sur votre machine :
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Docker** : [Télécharger et installer Docker](https://docs.docker.com/get-docker/)
+- **Docker Compose** : [Télécharger et installer Docker Compose](https://docs.docker.com/compose/install/)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Cloner le Dépôt
 
-## Learning Laravel
+Pour obtenir le code source de l'application, clonez le dépôt GitHub :
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+git clone https://github.com/votre_nom_utilisateur/crud-app.git
+cd crud-app.
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Cloner l'Image Docker
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Si vous avez déjà l'image Docker, assurez-vous de l'avoir récupérée sur Docker Hub. Vous pouvez utiliser la commande suivante pour tirer l'image.
 
-## Laravel Sponsors
+```bash
+docker pull your_dockerhub_username/crud-app:latest
+```
+## Préparer l'Environnement
+Avant de lancer les conteneurs, vous devez préparer votre environnement local en créant un fichier .env à la racine du projet. Ce fichier contient les variables d'environnement nécessaires pour que l'application fonctionne correctement.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Créez un fichier .env basé sur le modèle fourni.
 
-### Premium Partners
+```bash
+cp .env.example .env
+```
+Ensuite, ouvrez le fichier .env et configurez les variables en fonction de votre environnement.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Configurer la Base de Données (Docker)
 
-## Contributing
+Pour faire correspondre la configuration de la base de données avec celle définie dans votre fichier `docker-compose.yml`, suivez ces étapes :
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Vérifiez le Fichier `docker-compose.yml`
 
-## Code of Conduct
+Assurez-vous que votre fichier `docker-compose.yml` contient les informations suivantes pour le service MySQL :
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```yaml
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: myrootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: myuserpassword
+    networks:
+      - app-network
+    ports:
+      - "3306:3306"
+```
 
-## Security Vulnerabilities
+Ajoutez dans votre .env les informations suivantes :
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=mydatabase
+DB_USERNAME=myuser
+DB_PASSWORD=myuserpassword
+```
 
-## License
+## Lancer les Conteneurs
+Pour démarrer les conteneurs Docker et préparer l'application, exécutez la commande suivante :
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+docker-compose up --build
+```
+Cette commande construit et démarre les conteneurs définis dans votre fichier docker-compose.yml.
+
+## Préparer le Projet
+Une fois les conteneurs en cours d'exécution, accédez au conteneur de l'application Laravel.
+
+### 1. Complétez l'Installation
+Accédez au conteneur de l'application Laravel pour compléter l'installation des paquets nécessaires. Exécutez la commande suivante pour installer le client MySQL.
+
+```bash
+docker-compose exec app bash
+```
+```bash
+apt-get update
+```
+```bash
+apt-get install -y default-mysql-client
+```
+### 2. Tester la Connexion à la Base de Données
+Après avoir installé le client MySQL, vous pouvez tester la connexion à la base de données MySQL en utilisant la commande suivante. Assurez-vous de remplacer myuser et myuserpassword par les identifiants appropriés définis dans votre fichier docker-compose.yml.
+
+```bash
+mysql -h db -u myuser -p
+```
+
+### 3. Installer les Dépendances PHP
+Installez les dépendances PHP nécessaires via Composer :
+
+```bash
+composer install --no-dev --optimize-autoloader
+```
+
+### 4. Installer les Dépendances JavaScript
+Installez les dépendances JavaScript via Yarn :
+
+```bash
+yarn install
+```
+
+### 5. Préparer le Stockage 
+Créez le lien symbolique pour le stockage :
+
+```bash
+php artisan storage:link
+```
+
+### 6. Exécuter les Migrations
+Exécutez les migrations pour préparer la base de données :
+
+```bash
+php artisan migrate
+```
+
+### 7. (Optionnel) Exécuter les Seeders
+Si vous avez des seeders pour peupler la base de données avec des données de test, exécutez-les :
+
+```bash
+php artisan db:seed
+```
+### 8. Démarrer le Serveur de Développement
+Pour que l'application Vue.js soit accessible en mode développement et que les modifications soient prises en compte automatiquement, démarrez le serveur de développement :
+
+```bash
+yarn run dev
+```
+
+## Accéder à l'Application
+Après avoir préparé le projet et démarré le serveur de développement, vous pouvez accéder à l'application en ouvrant votre navigateur et en naviguant vers http://localhost
+
+## Dépannage
+Si vous rencontrez des problèmes, voici quelques étapes de dépannage :
+
+### 1. Vérifiez les logs : 
+Vous pouvez consulter les logs des conteneurs pour diagnostiquer les problèmes éventuels.
+
+```bash
+docker-compose logs
+```
+
+### 2. Vérifiez la connexion à la base de données :
+ Assurez-vous que les paramètres dans le fichier .env correspondent aux paramètres définis dans docker-compose.yml.
+
+### 3. Redémarrez les conteneurs : 
+Parfois, un redémarrage des conteneurs peut résoudre des problèmes.
+
+```bash
+docker-compose down
+docker-compose up --build
+```
+
+En suivant ces étapes, vous serez en mesure de lancer et de faire fonctionner votre projet Laravel et Vue.js avec Docker.
+Ce guide détaillé vous permettra de cloner, configurer, et lancer votre application Lara
