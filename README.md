@@ -14,7 +14,7 @@ Avant de commencer, assurez-vous que vous disposez des outils suivants installé
 Pour obtenir le code source de l'application, clonez le dépôt GitHub :
 
 ```bash
-git clone https://github.com/PriscilliaHilDev/crud-app.git
+git clone https://github.com/votre_nom_utilisateur/crud-app.git
 cd crud-app.
 ```
 
@@ -23,7 +23,7 @@ cd crud-app.
 Si vous avez déjà l'image Docker, assurez-vous de l'avoir récupérée sur Docker Hub. Vous pouvez utiliser la commande suivante pour tirer l'image.
 
 ```bash
-docker pull prishildev/crud-app-app:latest
+docker pull your_dockerhub_username/crud-app:latest
 ```
 ## Préparer l'Environnement
 Avant de lancer les conteneurs, vous devez préparer votre environnement local en créant un fichier .env à la racine du projet. Ce fichier contient les variables d'environnement nécessaires pour que l'application fonctionne correctement.
@@ -125,62 +125,66 @@ docker-compose up --build
 Cette commande construit et démarre les conteneurs définis dans votre fichier docker-compose.yml.
 
 ## Préparer le Projet
-Une fois les conteneurs en cours d'exécution, accédez au conteneur de l'application Laravel.
 
-### 1. Complétez l'Installation
-Accédez au conteneur de l'application Laravel pour compléter l'installation des paquets nécessaires. Exécutez la commande suivante pour installer le client MySQL.
-
+### 1. Accéder au conteneur de l'application Laravel
+Une fois les conteneurs en cours d'exécution, exécutez la commande suivant:
 ```bash
 docker-compose exec app bash
 ```
+
+### 2. Complétez l'Installation
+Une fois dans conteneur de l'application Laravel complétez l'installation des paquets nécessaires en éxécutant les commandes suivantes pour installer le **client MySQL**.
+
 ```bash
 apt-get update
 ```
 ```bash
 apt-get install -y default-mysql-client
 ```
-### 2. Tester la Connexion à la Base de Données
-Après avoir installé le client MySQL, vous pouvez tester la connexion à la base de données MySQL en utilisant la commande suivante. Assurez-vous de remplacer myuser et myuserpassword par les identifiants appropriés définis dans votre fichier docker-compose.yml.
+### 3. Tester la Connexion à la Base de Données
+Après avoir installé le client MySQL, vous pouvez tester la connexion à la base de données MySQL en utilisant la commande suivante. 
 
 ```bash
 mysql -h db -u myuser -p
 ```
 
-### 3. Installer les Dépendances PHP
+Assurez-vous de remplacer myuser et myuserpassword par les identifiants appropriés définis dans votre fichier docker-compose.yml.
+
+### 4. Installer les Dépendances PHP
 Installez les dépendances PHP nécessaires via Composer :
 
 ```bash
 composer install --no-dev --optimize-autoloader
 ```
 
-### 4. Installer les Dépendances JavaScript
+### 5. Installer les Dépendances JavaScript
 Installez les dépendances JavaScript via Yarn :
 
 ```bash
 yarn install
 ```
 
-### 5. Préparer le Stockage 
+### 6. Préparer le Stockage 
 Créez le lien symbolique pour le stockage :
 
 ```bash
 php artisan storage:link
 ```
 
-### 6. Exécuter les Migrations
+### 7. Exécuter les Migrations
 Exécutez les migrations pour préparer la base de données :
 
 ```bash
 php artisan migrate
 ```
 
-### 7. (Optionnel) Exécuter les Seeders
+### 8. (Optionnel) Exécuter les Seeders
 Si vous avez des seeders pour peupler la base de données avec des données de test, exécutez-les :
 
 ```bash
 php artisan db:seed
 ```
-### 8. Démarrer le Serveur de Développement
+### 9. Démarrer le Serveur de Développement
 Pour que l'application Vue.js soit accessible en mode développement et que les modifications soient prises en compte automatiquement, démarrez le serveur de développement :
 
 ```bash
@@ -212,4 +216,3 @@ docker-compose up --build
 ```
 
 En suivant ces étapes, vous serez en mesure de lancer et de faire fonctionner votre projet Laravel et Vue.js avec Docker.
-Ce guide détaillé vous permettra de cloner, configurer, et lancer votre application Laravel.
