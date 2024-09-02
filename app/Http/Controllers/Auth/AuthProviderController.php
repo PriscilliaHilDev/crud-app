@@ -44,8 +44,8 @@ class AuthProviderController extends Controller
             // Récupère l'utilisateur depuis le fournisseur
             $user = Socialite::driver($provider)->user();
 
-            // Trouver ou créer un utilisateur dans la base de données
-            $authUser = User::updateOrCreate(
+            // Trouve ou crée un utilisateur dans la base de données
+            $authUser = User::firstOrCreate(
                 ['email' => $user->getEmail()],
                 [
                     'name' => $user->getName(),
@@ -63,4 +63,5 @@ class AuthProviderController extends Controller
             return redirect('/login')->with('error', 'Erreur lors de la connexion.');
         }
     }
+
 }
