@@ -156,16 +156,16 @@ console.log(props.posts)
                     </div>
                     <div class="absolute inset-0 bg-pink-100 opacity-50"></div>
                     <div
-                      class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10 py-10 sm:py-10 flex flex-col items-center text-center"
+                      class="mx-auto max-w-7xl px-6 lg:px-8 relative z-10  flex flex-col items-center text-center"
                     >
                       <div class="mx-auto max-w-2xl">
                         <Link class="-m-1.5 p-1.5" :href="route('post.show', { post: postItem })">
                           <h2 class="font-bold tracking-tight text-slate-600 text-2xl sm:text-2xl lg:text-3xl xl:text-4xl">
-                            {{ truncateByWords(postItem.title, 7) }}
+                            {{ truncateByWords(postItem.title, 5) }}
                           </h2>
                         </Link>
                         <p class="mt-6 sm:text-md lg:text-lg xl:text-xl leading-6 sm:leading-7 lg:leading-8 xl:leading-9 text-slate-600">
-                          {{ truncateByWords(postItem.content, 18) }}
+                          {{ truncateByWords(postItem.content, 14) }}
                         </p>
                       </div>
                     </div>

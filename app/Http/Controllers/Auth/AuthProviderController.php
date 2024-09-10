@@ -18,14 +18,22 @@ class AuthProviderController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function redirectToProvider($provider)
-    {
-        // Vérifie si le fournisseur est valide
-        if (!in_array($provider, ['google', 'github'])) {
-            abort(404, 'Provider not supported.');
-        }
-
-        return Socialite::driver($provider)->redirect();
+{
+    // Vérifie si le fournisseur est valide
+    if (!in_array($provider, ['google', 'github'])) {
+        abort(404, 'Provider not supported.');
     }
+
+    // Ajoute l'option pour Google pour forcer l'apparition de la modal
+    if ($provider === 'google') {
+        return Socialite::driver($provider)
+            ->with(['prompt' => 'select_account']) // Forcer la modal
+            ->redirect();
+    }
+
+    return Socialite::driver($provider)->redirect();
+}
+
 
     /**
      * Gère la réponse du fournisseur après l'authentification.
