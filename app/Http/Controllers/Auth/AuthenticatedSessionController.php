@@ -31,9 +31,9 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
+        // Redirige vers la page de liste des posts après la connexion
         return redirect()->intended(route('post.list', absolute: false));
     }
 
@@ -45,15 +45,20 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');
     }
 
-    // etre redirigé a la page dashbord si on va sur la page d'acceuil alors que l'on est connecté sinon avoir la page d'acceuil si pas connecté
-    public function HomeNotLogged(){
-        
+    /**
+     * Redirect based on authentication status.
+     */
+    public function homeNotLogged(Request $request)
+    {
+        if (Auth::check()) {
+            return redirect()->route('post.list');
+        }
+    
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
@@ -61,4 +66,5 @@ class AuthenticatedSessionController extends Controller
             'phpVersion' => PHP_VERSION,
         ]);
     }
+    
 }

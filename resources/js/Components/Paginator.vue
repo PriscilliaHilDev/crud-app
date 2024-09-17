@@ -48,7 +48,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="absolute bottom-0 right-0 left-0">
+  <!-- Vérifier si le nombre total de pages est supérieur à 1 -->
+  <div v-if="totalPages > 1" class="absolute bottom-0 right-0 left-0">
     <Paginator
       v-if="!isMobile"
       :rows="pagination.per_page"

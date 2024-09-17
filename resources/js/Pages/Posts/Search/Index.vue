@@ -2,7 +2,6 @@
   <Head title="Dashboard" />
   <AuthenticatedLayout>
     <template v-slot:header>
-      <h2 class="font-semibold text-xl">Dashboard</h2>
     </template>
 
     <div class="p-4 container mx-auto">
@@ -10,7 +9,6 @@
       <div class="mt-8">
         <div class="flex flex-col items-center py-8">
           <p class="text-2xl text-center mb-4">Que recherchez-vous ?</p>
-          
         </div>
         <div class="flex items-center space-x-3">
           <FwbInput
@@ -28,67 +26,68 @@
           </FwbInput>
         </div>
       </div>
-      
+
       <!-- Section pour afficher les résultats de la recherche -->
       <div class="p-4 container mx-auto">
-        <div v-if="query.length > 0 && !loading && !isEmptyObject(results)">
-          <!-- Affiche les onglets seulement si des posts existent dans au moins un onglet -->
-          <FwbTabs v-model="activeTab" class="p-5">
-            <!-- Création des onglets dynamiquement -->
-            <FwbTab
-              v-for="(result, option) in results"
-              :key="option"
-              :title="option"
-              :name="option"
-              :disabled="!result.posts || result.posts.length === 0"
-            >
-              <!-- Contenu des onglets -->
-              <div v-if="activeTab === 'Tout'" class="space-y-4">
-                <!-- Section pour les posts de chaque catégorie -->
-                <PostSection
-                  v-if="results.Titres && results.Titres.posts.length"
-                  :posts="results.Titres.posts"
-                  sectionTitle="Titres"
-                  :isAllTab="isAllTab(activeTab)"
-                  :pagination="results.Titres.pagination"
-                  @see-more="handleSeeMore('Titres')"
-                />
-                <PostSection
-                  v-if="results.Auteurs && results.Auteurs.posts.length"
-                  :posts="results.Auteurs.posts"
-                  sectionTitle="Auteurs"
-                  :isAllTab="isAllTab(activeTab)"
-                  :pagination="results.Auteurs.pagination"
-                  @see-more="handleSeeMore('Auteurs')"
-                />
-                <PostSection
-                  v-if="results.Catégories && results.Catégories.posts.length"
-                  :posts="results.Catégories.posts"
-                  sectionTitle="Catégories"
-                  :pagination="results.Catégories.pagination"
-                  :isAllTab="isAllTab(activeTab)"
-                  @see-more="handleSeeMore('Catégories')"
-                />
-              </div>
-              <div v-else>
-                <!-- Affichage des posts pour l'onglet actif -->
-                <PostSection
-                  v-if="results[activeTab] && results[activeTab].posts.length"
-                  :posts="results[activeTab].posts"
-                  :sectionTitle="activeTab"
-                  :isAllTab="isAllTab(activeTab)"
-                  :pagination="results[activeTab].pagination"
-                  :queryValue="query"
-                />
-              </div>
-            </FwbTab>
-          </FwbTabs>
-          
-          <!-- Affichage d'un message si aucun post n'est disponible -->
-          <div v-if="!hasPostsInTabs()">
-            <p>Aucun post trouvé pour cette recherche.</p>
+        <!-- Vérifier si une requête a été faite -->
+        <div v-if="query.length > 0 && !loading">
+          <!-- Si des résultats existent, afficher les onglets -->
+          <div v-if="hasPostsInTabs()">
+            <FwbTabs v-model="activeTab" class="p-5">
+              <!-- Création des onglets dynamiquement -->
+              <FwbTab
+                v-for="(result, option) in results"
+                :key="option"
+                :title="option"
+                :name="option"
+                :disabled="!result.posts || result.posts.length === 0"
+              >
+                <!-- Contenu des onglets -->
+                <div v-if="activeTab === 'Tout'" class="space-y-4">
+                  <!-- Section pour les posts de chaque catégorie -->
+                  <PostSection
+                    v-if="results.Titres && results.Titres.posts.length"
+                    :posts="results.Titres.posts"
+                    sectionTitle="Titres"
+                    :isAllTab="isAllTab(activeTab)"
+                    :pagination="results.Titres.pagination"
+                    @see-more="handleSeeMore('Titres')"
+                  />
+                  <PostSection
+                    v-if="results.Auteurs && results.Auteurs.posts.length"
+                    :posts="results.Auteurs.posts"
+                    sectionTitle="Auteurs"
+                    :isAllTab="isAllTab(activeTab)"
+                    :pagination="results.Auteurs.pagination"
+                    @see-more="handleSeeMore('Auteurs')"
+                  />
+                  <PostSection
+                    v-if="results.Catégories && results.Catégories.posts.length"
+                    :posts="results.Catégories.posts"
+                    sectionTitle="Catégories"
+                    :pagination="results.Catégories.pagination"
+                    :isAllTab="isAllTab(activeTab)"
+                    @see-more="handleSeeMore('Catégories')"
+                  />
+                </div>
+                <div v-else>
+                  <!-- Affichage des posts pour l'onglet actif -->
+                  <PostSection
+                    v-if="results[activeTab] && results[activeTab].posts.length"
+                    :posts="results[activeTab].posts"
+                    :sectionTitle="activeTab"
+                    :isAllTab="isAllTab(activeTab)"
+                    :pagination="results[activeTab].pagination"
+                    :queryValue="query"
+                  />
+                </div>
+              </FwbTab>
+            </FwbTabs>
           </div>
-          <div class="my-8 border-t border-gray-200 dark:border-gray-700"></div>
+          <!-- Si aucun post n'est trouvé et le chargement est terminé -->
+          <div v-else-if="!loading">
+            <p class="text-center text-gray-500">Aucun post trouvé pour cette recherche.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -96,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { debounce } from 'lodash';
 import { FwbInput, FwbTab, FwbTabs } from 'flowbite-vue';
 import axios from '../../../axios';

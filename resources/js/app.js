@@ -12,6 +12,11 @@ import InputText from 'primevue/inputtext';
 import Aura from '@primevue/themes/aura';
 import Card from 'primevue/card';
 import Paginator from 'primevue/paginator';
+import Popover from 'primevue/popover';
+import ConfirmationService from 'primevue/confirmationservice';
+import Badge from 'primevue/badge';
+import OverlayBadge from 'primevue/overlaybadge';
+import Divider from 'primevue/divider';
 
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -46,11 +51,16 @@ createInertiaApp({
                 }
              })
             .use(ToastService)
+            .use(ConfirmationService)
             .component('font-awesome-icon', FontAwesomeIcon)
             .component('MultiSelect', MultiSelect)
             .component('InputText', InputText)
             .component('Card', Card)
             .component('Paginator', Paginator)
+            .component('Popover', Popover)
+            .component('OverlayBadge', OverlayBadge)
+            .component('Badge', Badge)
+            .component('Divider', Divider)
             .mount(el);
     },
     progress: {

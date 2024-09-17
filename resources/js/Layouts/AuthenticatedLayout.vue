@@ -1,3 +1,60 @@
+
+<script setup>
+import { ref, onMounted} from 'vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import NavLink from '@/Components/NavLink.vue';
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { Link } from '@inertiajs/vue3';
+import PushNotification from '@/Components/PushNotification.vue'; // Importer le composant
+import NotificationPopover from '@/Components/NotificationPopover.vue';
+import { usePage } from '@inertiajs/vue3';
+
+// Définition des props
+const props = defineProps({
+  routeName: {
+    type: String,
+  },
+});
+
+const showingNavigationDropdown = ref(false);
+const page = usePage();
+const notificationManager = ref(null);
+const postToPush = ref(null);
+const popoverManager = ref(null);
+
+
+// Vérifier les messages flash au montage du composant
+onMounted(() => {
+    const userId = page.props.auth.user.id;
+
+    if (window.Echo && userId) {
+        window.Echo.private(`user.${userId}`)
+            .listen('.comment-added', (e) => {
+                if(notificationManager.value){
+                    //envoie du post pour creer lien vers le post depuis la notification pop up
+                    postToPush.value = e.comment.post;
+                    // utilisation de la methode showpush pour affiche la toast lié a la notification depuis le composant pushnotification
+                    notificationManager.value.showPush(e.comment.author, e.comment.message, e.comment.createdAt);
+                }
+                 // Appeler les méthodes exposées dans NotificationPopover
+                 if (popoverManager.value) {
+                    popoverManager.value.fetchNotifications();
+                }
+            });
+    }
+
+    const successMessage = page.props.flash.message;
+    if (successMessage && notificationManager.value) {
+        notificationManager.value.showToast(successMessage);
+    }
+
+    popoverManager.value.fetchNotifications();
+   
+});
+</script>
+
 <template>
     <div>
         <div class="relative min-h-screen bg-pink-100">
@@ -32,6 +89,7 @@
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <NotificationPopover ref="popoverManager"/>
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">
                                 <Dropdown align="right" width="48">
@@ -108,7 +166,7 @@
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <ResponsiveNavLink :href="route('post.create')" :active="route().current('post.create')">
                             Ecrire un article
                         </ResponsiveNavLink>
                     </div>
@@ -156,60 +214,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
-import PushNotification from '@/Components/PushNotification.vue'; // Importer le composant
-
-import { usePage } from '@inertiajs/vue3';
-
-// Définition des props
-const props = defineProps({
-  routeName: {
-    type: String,
-  },
-});
-
-const showingNavigationDropdown = ref(false);
-const page = usePage();
-const notificationManager = ref(null);
-const postToPush = ref(null);
-
-
-// Fonction pour tester la notification push
-const testPushNotification = () => {
-    if (notificationManager.value) {
-        notificationManager.value.showPush('Test Author', 'Dans un monde rempli de rêves, chaque instant est une occasion de découvrir la beauté qui nous entoure et nous inspire'); // Appeler la méthode
-    }
-};
-
-// Vérifier les messages flash au montage du composant
-onMounted(() => {
-    const userId = page.props.auth.user.id;
-
-    if (window.Echo && userId) {
-        window.Echo.private(`user.${userId}`)
-            .listen('.comment-added', (e) => {
-                if (notificationManager.value) {
-                    // Utilisez la méthode showPush pour afficher le message
-                    postToPush.value = e.comment.post;
-                    notificationManager.value.showPush(e.comment.author, e.comment.message, e.comment.createdAt);
-                }
-            });
-    }   
-
-    const successMessage = page.props.flash.message;
-    if (successMessage && notificationManager.value) {
-        // Utilisez la méthode showToast pour afficher le message de succès
-        notificationManager.value.showToast(successMessage);
-    }
-});
-
-</script>

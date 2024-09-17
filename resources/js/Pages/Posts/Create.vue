@@ -65,7 +65,7 @@ const createPost = () => {
 <template>
     <AuthenticatedLayout>
        <template #header>
-            <h2 class="font-semibold text-xl">Creation d'un nouvel article </h2>
+            <!-- <h2 class="font-semibold text-xl">Creation d'un nouvel article </h2> -->
         </template>
         <div class="mx-auto flex justify-center bg-slate-50 mb-10">
             <div class="isolate px-6 py-24 sm:py-32 lg:px-8">

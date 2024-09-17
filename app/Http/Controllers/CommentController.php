@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\CommentStoreRequest;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\CommentNotification;
 
 
 
@@ -48,6 +50,8 @@ class CommentController extends Controller
         if ($post->user_id !== auth()->id()) {
             // Déclencher l'événement CommentAdded
             event(new CommentAdded($comment));
+            $post->user->notify(new CommentNotification($comment));
+            // Notification::sendNow($post->user, new CommentNotification($comment));
         }
         // CommentAdded::dispatch($comment);
 

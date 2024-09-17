@@ -26,7 +26,6 @@ const props = defineProps({
 
     <AuthenticatedLayout>
         <template v-slot:header>
-            <h2 class="font-semibold text-xl">Dashboard</h2>
         </template>
 
         <div v-if="myPosts.length > 0">

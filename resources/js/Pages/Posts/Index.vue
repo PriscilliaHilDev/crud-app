@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { ref, onMounted, defineExpose} from 'vue';
+import { ref, onMounted} from 'vue';
 import {
   Dialog,
   DialogPanel,

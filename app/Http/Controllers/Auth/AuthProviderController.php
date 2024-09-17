@@ -27,7 +27,7 @@ class AuthProviderController extends Controller
     // Ajoute l'option pour Google pour forcer l'apparition de la modal
     if ($provider === 'google') {
         return Socialite::driver($provider)
-            ->with(['prompt' => 'select_account']) // Forcer la modal
+            // ->with(['prompt' => 'select_account']) // Forcer la modal
             ->redirect();
     }
 
@@ -65,7 +65,8 @@ class AuthProviderController extends Controller
             Auth::login($authUser);
 
             // Redirige l'utilisateur vers la page d'accueil ou une autre page
-            return redirect()->intended('/');
+            return redirect()->route('post.list');
+
         } catch (\Exception $e) {
             // Enregistre l'erreur pour le débogage
             return redirect('/login')->with('error', 'Erreur lors de la connexion.');

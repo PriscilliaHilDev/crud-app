@@ -30,5 +30,22 @@ export function truncateByWords(text, maxWords) {
       day: '2-digit',
       month: 'long',
       year: 'numeric'
-    });
+    }); 
+}
+
+export function formatDateAndHour (isoDate) {
+  const date = new Date(isoDate);
+
+  const formattedDate = date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+  });
+
+  const formattedTime = date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+  });
+
+  return `${formattedDate} à ${formattedTime}`;
 }

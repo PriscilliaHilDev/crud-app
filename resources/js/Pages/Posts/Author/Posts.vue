@@ -51,7 +51,7 @@ const deletePost = (post) => {
 
     <AuthenticatedLayout>
         <template v-slot:header>
-            <h2 class="font-semibold text-xl">Dashboard</h2>
+            <!-- <h2 class="font-semibold text-xl">Dashboard</h2> -->
         </template>
         <div v-if="myPosts.length > 0">
             <OverlayDelete :currentItem="getPost" :show="isOverlayVisible" :toggleVisible="toggleVisible" textDial="Souhaitez vous supprimer ce commentaire ?" :funcDelete="deletePost"/>
