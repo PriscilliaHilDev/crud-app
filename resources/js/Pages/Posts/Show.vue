@@ -154,9 +154,9 @@ const createComment = () => {
                         <h2 class="text-xl font-semibold text-pink-900">{{ post.post.title }}</h2>
                         <p class="text-sm text-pink-900">Publié le {{ formatDate(post.post.created_at) }}</p>
                     </div>
-                    <div class="p-6 flex items-center justify-center "> <!-- Ajout des classes pour centrer -->
+                    <div class="p-6 flex items-center justify-center"> 
                         <img :src="post?.image ? '/storage/' + post.image : '/storage/images/default-image.jpg'" alt="Article Image" 
-                        class="w-[500px] max-h-[400px] rounded-lg mb-4">
+                        class="w-[500px] max-h-[400px] rounded-lg mb-4 object-cover">
                     </div>
                     <div class="p-6">
                         <p class="text-gray-700 text-justify leading-relaxed mb-8 ">
@@ -173,7 +173,7 @@ const createComment = () => {
                     <div class="px-6 py-4 bg-gray-100">
                         <h2 class="text-xl font-semibold text-pink-900">Commentaires</h2>
                     </div>
-                    <div class="p-6 overflow-y-auto max-h-[400px]">
+                    <div class="p-6 overflow-y-auto max-h-[400px] min-h-[500px]">
                         <!-- Vérifier s'il y a des commentaires -->
                         <div v-if="comments.length === 0" class="text-gray-700">
                             Il n'y a pas encore de commentaires pour cet article.
