@@ -42,6 +42,13 @@ class DatabaseSeeder extends Seeder
         foreach ($posts as $post) {
             Comment::factory(3)->create(['post_id' => $post->id, 'user_id' => $users->random()->id]);
         }
+
+        $this->call([
+            RoleSeeder::class,
+            PermissionSeeder::class,
+            RolePermissionSeeder::class,
+            // UserRoleSeeder::class
+        ]);
        
     }
 }
