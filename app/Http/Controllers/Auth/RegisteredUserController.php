@@ -43,6 +43,9 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+        // ASSIGNER ROLE WRITE A USER LANDA
+        $user->assignRole('writer');
+
 
         Auth::login($user);
 

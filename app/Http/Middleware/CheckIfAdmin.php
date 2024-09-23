@@ -27,8 +27,8 @@ class CheckIfAdmin
      */
     private function checkIfUserIsAdmin($user)
     {
-        // return ($user->is_admin == 1);
-        return true;
+             return $user && $user->hasRole('admin'); // Vérifie si l'utilisateur a le rôle 'admin'
+
     }
 
     /**
@@ -55,6 +55,7 @@ class CheckIfAdmin
      */
     public function handle($request, Closure $next)
     {
+     
         if (backpack_auth()->guest()) {
             return $this->respondToUnauthorizedRequest($request);
         }
