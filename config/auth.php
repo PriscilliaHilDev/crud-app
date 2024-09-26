@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'backpack' => [
+            'driver' => 'session',
+            'provider' => 'users', // Utilisez le même provider que pour 'web'
+        ],
     ],
 
     /*

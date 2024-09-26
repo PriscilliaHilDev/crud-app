@@ -31,13 +31,18 @@ return [
     // route group, that has all the the middleware listed below in the comments.
     'web_middleware' => 'web',
     // Or you can comment the above, and uncomment the complete list below.
-    'web_middleware' => [
-        App\Http\Middleware\EnsureUserIsAdmin::class,
+    // 'web_middleware' => [
         // \App\Http\Middleware\EncryptCookies::class,
         // \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         // \Illuminate\Session\Middleware\StartSession::class,
         // \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         // \App\Http\Middleware\VerifyCsrfToken::class,
+    // ],
+     // Middleware personnalisé pour l'admin
+     'custom_middleware' => [
+        'ensure_admin' => [
+            App\Http\Middleware\EnsureAdminRole::class,
+        ],
     ],
 
     // Set this to false if you would like to use your own AuthController and PasswordController
@@ -115,7 +120,7 @@ return [
         App\Http\Middleware\CheckIfAdmin::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \Backpack\CRUD\app\Http\Middleware\AuthenticateSession::class,
-        // \Backpack\CRUD\app\Http\Middleware\UseBackpackAuthGuardInsteadOfDefaultAuthGuard::class,
+        \Backpack\CRUD\app\Http\Middleware\UseBackpackAuthGuardInsteadOfDefaultAuthGuard::class,
     ],
 
     // Alias for that middleware

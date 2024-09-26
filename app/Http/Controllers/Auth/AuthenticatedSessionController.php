@@ -29,20 +29,24 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
 
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
-        $request->session()->regenerate();
-    
-        // Récupérer l'utilisateur connecté
-        $user = Auth::user();
-    
-        // Connecter l'utilisateur dans Backpack
-        backpack_auth()->login($user);;
-    
-        // Redirige vers la page de liste des posts après la connexion
-        return redirect()->intended(route('post.list', absolute: false));
-    }
+     public function store(LoginRequest $request): RedirectResponse
+     {
+         // Authentifier l'utilisateur
+         $request->authenticate();
+         $request->session()->regenerate();
+     
+         // Récupérer l'utilisateur connecté
+         $user = Auth::user();
+     
+         // Vérifier si l'utilisateur a le rôle d'admin
+         if ($user->hasRole('admin')) {
+             // Connecter l'utilisateur dans Backpack
+             backpack_auth()->login($user);
+         }
+     
+         // Redirige vers la page de liste des posts ou la page d'accueil selon le rôle
+         return redirect()->intended(route('post.list', absolute: false));
+     }
     
 
     /**
