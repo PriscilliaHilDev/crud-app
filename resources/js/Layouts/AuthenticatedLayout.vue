@@ -8,7 +8,9 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import PushNotification from '@/Components/PushNotification.vue'; // Importer le composant
+import NotificationPopoverMobile from '@/Components/NotificationPopoverMobile.vue';
 import NotificationPopover from '@/Components/NotificationPopover.vue';
+
 import { usePage } from '@inertiajs/vue3';
 
 // Définition des props
@@ -19,10 +21,12 @@ const props = defineProps({
 });
 
 const showingNavigationDropdown = ref(false);
+const showNotification = ref(false);
 const page = usePage();
 const notificationManager = ref(null);
 const postToPush = ref(null);
 const popoverManager = ref(null);
+
 
 
 // Vérifier les messages flash au montage du composant
@@ -86,10 +90,12 @@ onMounted(() => {
                                     Recherche
                                 </NavLink>
                             </div>
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NotificationPopover ref="popoverManager" />
+                            </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
-                            <NotificationPopover ref="popoverManager"/>
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">
                                 <Dropdown align="right" width="48">
@@ -179,6 +185,9 @@ onMounted(() => {
                         <ResponsiveNavLink :href="route('search')" :active="route().current('search')">
                             Recherche
                         </ResponsiveNavLink>
+                    </div>
+                    <div class="pt-2 p-4 space-y-1">
+                        <NotificationPopoverMobile/>
                     </div>
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
