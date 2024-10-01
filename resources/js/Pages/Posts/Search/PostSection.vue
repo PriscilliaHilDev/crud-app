@@ -10,7 +10,7 @@ const animationData = ref(null);
 
 onMounted(async () => {
   try {
-    const response = await fetch('/build/assets/loading.json');
+    const response = await fetch('/assets/lotties/loading-animation.json');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
