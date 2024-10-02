@@ -154,140 +154,141 @@ const createComment = () => {
         />
 
         <div class="flex items-center justify-center py-32">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 w-2/3">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 w-2/3">
 
-                <!-- Première carte - Détail de l'article -->
-                <div class="col-span-full md:col-span-2 bg-white shadow-md rounded-lg overflow-hidden relative">
-                    <div class="px-6 py-4 bg-gray-100">
-                        <h2 class="text-xl font-semibold text-pink-900">{{ post.post.title }}</h2>
-                        <p class="text-sm text-pink-900">Publié le {{ formatDate(post.post.created_at) }}</p>
-                    </div>
+        <!-- Première carte - Détail de l'article -->
+        <div class="col-span-full md:col-span-2 bg-white shadow-md rounded-lg overflow-hidden relative">
+            <div class="px-6 py-4 bg-gray-100">
+                <h2 class="text-xl font-semibold text-pink-900">{{ post.post.title }}</h2>
+                <p class="text-sm text-pink-900">Publié le {{ formatDate(post.post.created_at) }}</p>
+            </div>
 
-                    <div class="p-6 flex justify-center">
-                        <img 
-                            :src="post?.image ? '/storage/' + post.image : '/storage/images/default-image.jpg'" 
-                            alt="Article Image"
-                            class="w-[500px] max-h-[400px] rounded-lg object-cover mb-4"
-                        />
-                    </div>
+            <div class="p-6 flex justify-center">
+                <img 
+                    :src="post?.image ? '/storage/' + post.image : '/storage/images/default-image.jpg'" 
+                    alt="Article Image"
+                    class="w-[500px] max-h-[400px] rounded-lg object-cover mb-4"
+                />
+            </div>
 
-                    <div class="p-6">
-                        <p class="text-gray-700 text-justify leading-relaxed mb-8">
-                            {{ post.post.content }}
-                        </p>
-                        <p class="text-xs text-right text-gray-400 mt-4">
-                            Par <span class="font-semibold">{{ post.author.name }}</span>
-                        </p>
-                    </div>
+            <div class="p-6">
+                <p class="text-gray-700 text-justify leading-relaxed mb-8">
+                    {{ post.post.content }}
+                </p>
+                <p class="text-xs text-right text-gray-400 mt-4">
+                    Par <span class="font-semibold">{{ post.author.name }}</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Deuxième carte - Commentaires -->
+        <div class="col-span-full md:col-span-1 bg-white shadow-md rounded-lg overflow-hidden relative flex flex-col">
+            <div class="px-6 py-4 bg-gray-100">
+                <h2 class="text-xl font-semibold text-pink-900">{{ comments.length }} Commentaire(s)</h2>
+            </div>
+
+            <!-- Section des commentaires -->
+            <div class="p-6 overflow-y-auto max-h-[300px] flex-grow">
+                <div v-if="comments.length === 0" class="text-gray-700">
+                    Il n'y a pas encore de commentaires pour cet article.
                 </div>
+                <div v-else>
+                    <div 
+                        v-for="comment in comments" 
+                        :key="comment.id" 
+                        class="pt-4 relative"
+                    >
+                        <p class="text-sm text-pink-700">
+                            Par <span class="font-semibold">{{ comment.user.name }}</span> le {{ formatDate(comment.created_at) }}
+                        </p>
+                        <p class="text-gray-800 leading-relaxed mt-2">{{ comment.content }}</p>
 
-                <!-- Deuxième carte - Commentaires -->
-                <div class="col-span-full md:col-span-1 bg-white shadow-md rounded-lg overflow-hidden relative">
-                    <div class="px-6 py-4 bg-gray-100">
-                        <h2 class="text-xl font-semibold text-pink-900">{{ comments.length }} Commentaire(s)</h2>
-                    </div>
-
-                    <!-- Section des commentaires -->
-                    <div class="p-6 overflow-y-auto max-h-[300px]">
-                        <div v-if="comments.length === 0" class="text-gray-700">
-                            Il n'y a pas encore de commentaires pour cet article.
-                        </div>
-                        <div v-else>
-                            <div 
-                                v-for="comment in comments" 
-                                :key="comment.id" 
-                                class="pt-4 relative"
-                            >
-                                <p class="text-sm text-pink-700">
-                                    Par <span class="font-semibold">{{ comment.user.name }}</span> le {{ formatDate(comment.created_at) }}
-                                </p>
-                                <p class="text-gray-800 leading-relaxed mt-2">{{ comment.content }}</p>
-
-                                <!-- Dropdown pour l'utilisateur authentifié -->
-                                <div v-if="comment.user.id === userID" class="absolute top-0 right-0 mt-2 mr-2">
-                                    <Menu as="div">
-                                        <MenuButton class="inline-flex items-center px-3 py-2 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm ring-1 ring-gray-300 hover:bg-gray-50">
-                                            <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
-                                        </MenuButton>
-                                        <transition 
-                                            enter-active-class="transition ease-out duration-100 transform opacity-0 scale-95" 
-                                            enter-to-class="opacity-100 scale-100"
-                                            leave-active-class="transition ease-in duration-75 transform opacity-100 scale-100"
-                                            leave-to-class="opacity-0 scale-95"
-                                        >
-                                            <MenuItems class="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-                                                <MenuItem v-slot="{ active }">
-                                                    <a 
-                                                        href="#" 
-                                                        @click="getEditMode(comment)" 
-                                                        :class="[
-                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                                            'block px-4 py-2 text-sm'
-                                                        ]"
-                                                    >
-                                                        Modifier
-                                                    </a>
-                                                </MenuItem>
-                                                <MenuItem v-slot="{ active }">
-                                                    <a 
-                                                        href="#" 
-                                                        @click="toggleVisible(comment)" 
-                                                        :class="[
-                                                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                                            'block px-4 py-2 text-sm'
-                                                        ]"
-                                                    >
-                                                        Supprimer
-                                                    </a>
-                                                </MenuItem>
-                                            </MenuItems>
-                                        </transition>
-                                    </Menu>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Formulaire d'ajout de commentaire -->
-                    <div class="px-6 py-4 bg-gray-100">
-                        <h3 class="text-lg font-semibold text-pink-900 mb-2">Ajouter un commentaire</h3>
-                        <form @submit.prevent="toggleEditComment">
-                            <div class="mb-4">
-                                <textarea 
-                                    id="comment" 
-                                    name="content" 
-                                    v-model="form.content" 
-                                    rows="3" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-pink-400 focus:ring-pink-400"
-                                ></textarea>
-                            </div>
-                            <div v-if="editMode" class="flex space-x-2">
-                                <button 
-                                    type="submit" 
-                                    class="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 focus:bg-pink-600"
+                        <!-- Dropdown pour l'utilisateur authentifié -->
+                        <div v-if="comment.user.id === userID" class="absolute top-0 right-0 mt-2 mr-2">
+                            <Menu as="div">
+                                <MenuButton class="inline-flex items-center px-3 py-2 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm ring-1 ring-gray-300 hover:bg-gray-50">
+                                    <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
+                                </MenuButton>
+                                <transition 
+                                    enter-active-class="transition ease-out duration-100 transform opacity-0 scale-95" 
+                                    enter-to-class="opacity-100 scale-100"
+                                    leave-active-class="transition ease-in duration-75 transform opacity-100 scale-100"
+                                    leave-to-class="opacity-0 scale-95"
                                 >
-                                    Modifier
-                                </button>
-                                <button 
-                                    type="button" 
-                                    @click="cancelComment" 
-                                    class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 focus:bg-gray-600"
-                                >
-                                    Annuler
-                                </button>
-                            </div>
-                            <button 
-                                v-else 
-                                :disabled="isDisabled" 
-                                type="submit" 
-                                class="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 focus:bg-pink-600 disabled:opacity-50"
-                            >
-                                Poster le commentaire
-                            </button>
-                        </form>
+                                    <MenuItems class="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                                        <MenuItem v-slot="{ active }">
+                                            <a 
+                                                href="#" 
+                                                @click="getEditMode(comment)" 
+                                                :class="[
+                                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                    'block px-4 py-2 text-sm'
+                                                ]"
+                                            >
+                                                Modifier
+                                            </a>
+                                        </MenuItem>
+                                        <MenuItem v-slot="{ active }">
+                                            <a 
+                                                href="#" 
+                                                @click="toggleVisible(comment)" 
+                                                :class="[
+                                                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                                                    'block px-4 py-2 text-sm'
+                                                ]"
+                                            >
+                                                Supprimer
+                                            </a>
+                                        </MenuItem>
+                                    </MenuItems>
+                                </transition>
+                            </Menu>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Formulaire d'ajout de commentaire -->
+            <div class="px-6 py-4 bg-gray-100 mt-auto">
+                <h3 class="text-lg font-semibold text-pink-900 mb-2">Ajouter un commentaire</h3>
+                <form @submit.prevent="toggleEditComment">
+                    <div class="mb-4">
+                        <textarea 
+                            id="comment" 
+                            name="content" 
+                            v-model="form.content" 
+                            rows="3" 
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-pink-400 focus:ring-pink-400"
+                        ></textarea>
+                    </div>
+                    <div v-if="editMode" class="flex space-x-2">
+                        <button 
+                            type="submit" 
+                            class="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 focus:bg-pink-600"
+                        >
+                            Modifier
+                        </button>
+                        <button 
+                            type="button" 
+                            @click="cancelComment" 
+                            class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 focus:bg-gray-600"
+                        >
+                            Annuler
+                        </button>
+                    </div>
+                    <button 
+                        v-else 
+                        :disabled="isDisabled" 
+                        type="submit" 
+                        class="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 focus:bg-pink-600 disabled:opacity-50"
+                    >
+                        Poster le commentaire
+                    </button>
+                </form>
+            </div>
         </div>
+    </div>
+</div>
+
     </AuthenticatedLayout>
 </template>
