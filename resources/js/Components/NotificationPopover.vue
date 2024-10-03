@@ -86,7 +86,7 @@ const panelClasses = computed(() => {
     <PopoverGroup>
       <Popover class="relative">
         <PopoverButton>
-          <OverlayBadge :value="unreadCount" size="small">
+          <OverlayBadge :value="unreadCount" @click="markAsRead" size="small">
             <font-awesome-icon icon="bell" color="grey" />
           </OverlayBadge>
         </PopoverButton>
