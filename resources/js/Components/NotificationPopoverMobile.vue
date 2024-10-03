@@ -73,51 +73,57 @@ defineExpose({
 </script>
 
 <template>
-    <div>
-        <div class="flex lg:hidden">
-            <OverlayBadge :value="unreadCount" @click="toggleOpenDial" size="small">
-                <font-awesome-icon icon="bell" color="grey" />
-            </OverlayBadge>
-        </div>
-        <Dialog class="lg:hidden" @close="mobileMenu = false" :open="mobileMenu">
-            <div class="fixed inset-0 z-10" />
-            <DialogPanel class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-                <div class="flex justify-end">
-                    <button
-                    type="button"
-                    class="-m-2.5 rounded-md p-2.5 text-gray-700"
-                    @click="mobileMenu = false"
-                    >
-                    <span class="sr-only">Close menu</span>
-                    <XMarkIcon class="h-6 w-6" aria-hidden="true" />
-                    </button>
-                </div>
-                <div class="mt-6 flow-root">
-                    <div class="-my-6 divide-y divide-gray-500/10">
-                        <div class="flex flex-col w-[25rem] p-2">
-                            <span class="font-medium block mb-2">Notifications</span>
-                            <Divider />
-                            <div class="max-h-[400px] overflow-y-auto">
-                                <ul v-if="allNotifications.length > 0" class="list-none p-0 m-0 flex flex-col">
-                                    <li v-for="notification in allNotifications" :key="notification.id" class="flex items-center gap-2">
-                                        <div :class="{
-                                            'text-gray-500': unreadCount === 0 || notification.read_at,
-                                            'text-black': unreadCount > 0 && !notification.read_at
-                                        }">
-                                            <p class="font-bold"> <span class="text-sm font-normal">{{ formatDateAndHour(notification.data.createdAt)}}</span>, Nouveau commentaire sur l'article  <span class="font-normal italic">« {{ notification.data.post_title }} »</span></p>
-                                            <p><span class="font-bold">{{ notification.data.author}}</span> à écrit : <span class="font-bold"> {{ notification.data.content }}</span> </p>
-                                            <a :href="route('post.show', { post: notification.data.post })">Voir l'article</a>
-                                            <div class="text-sm">{{ notification.createdAt }}</div>
-                                            <Divider />
-                                        </div>
-                                    </li>
-                                </ul>
-                                <p v-else>Aucune notification</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </DialogPanel>
-        </Dialog>
+  <div>
+    <div class="flex lg:hidden">
+      <OverlayBadge :value="unreadCount" @click="toggleOpenDial" size="small">
+        <font-awesome-icon icon="bell" color="grey" />
+      </OverlayBadge>
     </div>
+    <Dialog class="lg:hidden" @close="mobileMenu = false" :open="mobileMenu">
+      <div class="fixed inset-0 z-10" />
+      <DialogPanel class="fixed inset-y-0 right-0 z-20 w-full h-full bg-white shadow-lg flex flex-col p-4 overflow-hidden">
+        <div class="flex justify-between items-center">
+          <h2 class="font-medium text-lg">Notifications</h2>
+          <button
+            type="button"
+            class="rounded-md text-gray-700"
+            @click="mobileMenu = false"
+          >
+            <span class="sr-only">Close menu</span>
+            <XMarkIcon class="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+
+        <Divider class="my-2" />
+
+        <div class="flex-grow overflow-y-auto">
+          <ul v-if="allNotifications.length > 0" class="list-none p-0 m-0 flex flex-col">
+            <li
+              v-for="notification in allNotifications"
+              :key="notification.id"
+              class="flex flex-col gap-2 p-2 border-b border-gray-200"
+            >
+              <div :class="{
+                'text-gray-500': unreadCount === 0 || notification.read_at,
+                'text-black': unreadCount > 0 && !notification.read_at
+              }" class="text-center">
+                <p>
+                  <span class="text-sm">{{ formatDateAndHour(notification.data.createdAt) }}</span>,
+                  Nouveau commentaire sur l'article
+                  <span class="font-bold italic">« {{ notification.data.post_title }} »</span>
+                </p>
+                <p>
+                  <span class="font-bold">{{ notification.data.author }}</span> à écrit :
+                  <span class="font-bold">{{ notification.data.content }}</span>
+                </p>
+                <a :href="route('post.show', { post: notification.data.post })" class="text-blue-600 hover:underline">Voir l'article</a>
+                <div class="text-sm">{{ notification.createdAt }}</div>
+              </div>
+            </li>
+          </ul>
+          <p v-else class="text-center text-gray-500">Aucune notification</p>
+        </div>
+      </DialogPanel>
+    </Dialog>
+  </div>
 </template>

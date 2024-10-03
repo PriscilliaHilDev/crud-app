@@ -1,17 +1,18 @@
-
 <script setup>
-import { ref, onMounted} from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
-import PushNotification from '@/Components/PushNotification.vue'; // Importer le composant
+import PushNotification from '@/Components/PushNotification.vue'; // Composant pour les notifications push
 import NotificationPopoverMobile from '@/Components/NotificationPopoverMobile.vue';
 import NotificationPopover from '@/Components/NotificationPopover.vue';
 
-import { usePage } from '@inertiajs/vue3';
+// Importation des données de la page via Inertia.js
+const page = usePage();
 
 // Définition des props
 const props = defineProps({
@@ -20,44 +21,51 @@ const props = defineProps({
   },
 });
 
-const showingNavigationDropdown = ref(false);
-const showNotification = ref(false);
-const page = usePage();
-const notificationManager = ref(null);
-const postToPush = ref(null);
-const popoverManager = ref(null);
+// Variables réactives
+const showingNavigationDropdown = ref(false); // Pour afficher/cacher le menu de navigation
+const notificationManager = ref(null); // Référence au composant de gestion des notifications
+const postToPush = ref(null); // Contient les informations sur le post lié à la notification
+const popoverManager = ref(null); // Référence pour le popover des notifications
 
+const isAdmin = computed(() => {
+  return page.props.admin === true; // Check if admin is true
+});
 
-
-// Vérifier les messages flash au montage du composant
+// Fonction déclenchée au montage du composant
 onMounted(() => {
+    // Récupérer l'ID de l'utilisateur connecté depuis les props de la page
     const userId = page.props.auth.user.id;
 
+    // Écoute des événements en temps réel grâce à Laravel Echo si un utilisateur est connecté
     if (window.Echo && userId) {
+        // Canal privé pour écouter les événements spécifiques à l'utilisateur
         window.Echo.private(`user.${userId}`)
             .listen('.comment-added', (e) => {
                 if(notificationManager.value){
-                    //envoie du post pour creer lien vers le post depuis la notification pop up
+                    // Stocker les informations du post lié à la notification
                     postToPush.value = e.comment.post;
-                    // utilisation de la methode showpush pour affiche la toast lié a la notification depuis le composant pushnotification
+                    // Afficher la notification via la méthode `showPush` du composant PushNotification
                     notificationManager.value.showPush(e.comment.author, e.comment.message, e.comment.createdAt);
                 }
-                 // Appeler les méthodes exposées dans NotificationPopover
-                 if (popoverManager.value) {
+                
+                // Mettre à jour le popover des notifications
+                if (popoverManager.value) {
                     popoverManager.value.fetchNotifications();
                 }
             });
     }
 
+    // Vérifier les messages flash stockés dans la session pour les afficher
     const successMessage = page.props.flash.message;
     if (successMessage && notificationManager.value) {
-        notificationManager.value.showToast(successMessage);
+        notificationManager.value.showToast(successMessage); // Afficher le message flash via Toast
     }
 
+    // Charger les notifications pour l'utilisateur
     popoverManager.value.fetchNotifications();
-   
 });
 </script>
+
 
 <template>
     <div>
@@ -124,6 +132,7 @@ onMounted(() => {
                                     </template>
 
                                     <template #content>
+                                        <DropdownLink  v-if="isAdmin" href="/admin" > ADMINISTRATION </DropdownLink>
                                         <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
@@ -187,7 +196,7 @@ onMounted(() => {
                         </ResponsiveNavLink>
                     </div>
                     <div class="pt-2 p-4 space-y-1">
-                        <NotificationPopoverMobile/>
+                        <NotificationPopoverMobile ref="popoverManager"/>
                     </div>
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
@@ -199,10 +208,12 @@ onMounted(() => {
                         </div>
 
                         <div class="mt-3 space-y-1">
+                            <ResponsiveNavLink v-if="isAdmin" href="/admin">ADMINISTRATION</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
+
                         </div>
                     </div>
                 </div>
