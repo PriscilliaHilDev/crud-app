@@ -18,3 +18,39 @@ yarn-error.log
 /.idea
 /.vscode
 *.DS_Store
+# Fichiers et répertoires à ignorer globalement
+/.phpunit.cache
+/.phpunit.result.cache
+/.fleet
+/.idea
+/.vscode
+*.DS_Store
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+auth.json
+npm-debug.log
+yarn-error.log
+Homestead.json
+Homestead.yaml
+
+# Ignorer tout le contenu du répertoire storage/app/public
+/storage/app/public/*
+
+# Ne pas ignorer le répertoire lui-même
+!/storage/app/public/
+
+# Inclure uniquement certaines images dans le dossier images
+!/storage/app/public/images/
+!/storage/app/public/images/kiss.jpg
+!/storage/app/public/images/hug.jpg
+!/storage/app/public/images/home-blog.jpg
+!/storage/app/public/images/default-image.jpg
+
+
