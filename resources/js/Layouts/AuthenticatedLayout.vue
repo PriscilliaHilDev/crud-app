@@ -132,7 +132,7 @@ onMounted(() => {
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink  v-if="isAdmin" href="/admin" > ADMINISTRATION </DropdownLink>
+                                        <a  class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100" v-if="isAdmin" href="/admin" > ADMINISTRATION </a>
                                         <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
@@ -208,7 +208,7 @@ onMounted(() => {
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink v-if="isAdmin" href="/admin">ADMINISTRATION</ResponsiveNavLink>
+                            <a  class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100" v-if="isAdmin" href="/admin">ADMINISTRATION</a>
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out

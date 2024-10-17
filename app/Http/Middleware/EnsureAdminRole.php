@@ -23,10 +23,15 @@ class EnsureAdminRole
             // Vérifier si l'utilisateur a le rôle requis
             if ($user->hasRole("admin")) {
                 return $next($request); // L'utilisateur a le rôle requis, continuer
+            } else {
+                abort(404); // Si l'utilisateur n'a pas le rôle admin, erreur 404
             }
+        } else {
+            // Retourner la redirection si l'utilisateur n'est pas authentifié
+            return redirect()->route('post.list');
         }
-        abort(404);
 
-        // Rediriger ou retourner une erreur si l'utilisateur n'a pas le rôle requis
+        // Par défaut, s'assurer que le middleware retourne une réponse
+        return $next($request);
     }
 }
