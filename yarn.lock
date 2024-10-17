@@ -4660,7 +4660,6 @@ __metadata:
     vue: "npm:^3.4.0"
     vue-blurhash: "npm:^0.1.4"
     vue-lazyload: "npm:^3.0.0"
-    vue3-toastify: "npm:^0.2.2"
     vuetify: "npm:^3.6.0-beta.0.0"
     vuex: "npm:^4.0.2"
   languageName: unknown
@@ -5335,18 +5334,6 @@ __metadata:
   peerDependencies:
     vue: ^3.0.0
   checksum: 10c0/47691bd15565d28d5ea83bcad07086f5b35584518d91b816b748d041ce4eee40a889a4e5ad6514d7bb65af642d36823a4b7e442d1e63f195f770d3d646848954
-  languageName: node
-  linkType: hard
-
-"vue3-toastify@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "vue3-toastify@npm:0.2.2"
-  peerDependencies:
-    vue: ">=3.2.0"
-  peerDependenciesMeta:
-    vue:
-      optional: true
-  checksum: 10c0/c39588041b1ef05193b38275dde4a77dfd03f33276f33a1698da534afa59c955b760e1b84d8789192b18e4d25f43495da06dfd5a9e4b5e66f291b357fdb44a6f
   languageName: node
   linkType: hard
 
