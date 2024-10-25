@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Post; 
 use App\Models\Comment; 
@@ -12,6 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+    use CrudTrait;
     use HasFactory, Notifiable, HasRoles;
 
     /**
@@ -36,6 +38,21 @@ class User extends Authenticatable
     ];
 
     /**
+     * Boot method to handle the password update logic.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            // Si le mot de passe est vide, ne pas le modifier
+            if (empty($user->password)) {
+                $user->password = $user->getOriginal('password'); // garder l'original s'il n'est pas rempli
+            }
+        });
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -44,12 +61,14 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password' => 'hashed', // Laravel 11 has native support for hashed passwords
         ];
     }
 
     /**
-     * Get the posts for the user. Un utilisateur peut ecrit un ou plusieurs post relation (one to many)
+     * Define the relationship with Post. (One user can have many posts)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function posts()
     {
@@ -57,11 +76,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the comment for the user. Un utilisateur peut ecrit un ou plusieurs comment, mais chaque enregistrement dans la table UserComment est associé à un seul utilisateur relation (many to one)
+     * Define the relationship with Comment. (One user can have many comments)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function comments()
     {
         return $this->hasMany(Comment::class);
     }
-
 }
